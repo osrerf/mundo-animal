@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐾 Mundo Animal – Juego Educativo</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fef9f0;
+    --primary: #ff6b35;
+    --secondary: #4ecdc4;
+    --accent: #ffe66d;
+    --purple: #a29bfe;
+    --green: #55efc4;
+    --pink: #fd79a8;
+    --blue: #74b9ff;
+    --dark: #2d3436;
+    --card: #ffffff;
+    --shadow: 0 8px 32px rgba(0,0,0,0.12);
+    --radius: 20px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(255,107,53,0.08) 0%, transparent 50%),
+      radial-gradient(circle at 90% 80%, rgba(78,205,196,0.08) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, rgba(255,230,109,0.05) 0%, transparent 70%);
+  }
+
+  /* ─── FLOATING BUBBLES ─── */
+  .bubbles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .bubble {
+    position: absolute; border-radius: 50%; opacity: 0.15;
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(110vh) scale(0.5); opacity: 0; }
+    10% { opacity: 0.15; }
+    90% { opacity: 0.15; }
+    100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    position: relative; z-index: 10;
+    background: linear-gradient(135deg, var(--primary), #e84393);
+    padding: 16px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(255,107,53,0.4);
+  }
+  .logo { font-family: 'Fredoka One', cursive; font-size: 2rem; color: white; text-shadow: 3px 3px 0 rgba(0,0,0,0.15); }
+  .logo span { color: var(--accent); }
+  .header-stats { display: flex; gap: 16px; align-items: center; }
+  .stat-badge {
+    background: rgba(255,255,255,0.2); border-radius: 50px;
+    padding: 6px 16px; color: white; font-weight: 800; font-size: 0.9rem;
+    backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.3);
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* ─── NAV TABS ─── */
+  .nav-tabs {
+    position: relative; z-index: 10;
+    display: flex; gap: 0; background: var(--dark);
+    overflow-x: auto; padding: 0 16px;
+  }
+  .nav-tab {
+    font-family: 'Fredoka One', cursive; font-size: 1rem;
+    color: rgba(255,255,255,0.6); padding: 14px 20px;
+    cursor: pointer; border: none; background: transparent;
+    transition: all 0.3s; white-space: nowrap; position: relative;
+  }
+  .nav-tab.active { color: var(--accent); }
+  .nav-tab.active::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 3px; background: var(--accent); border-radius: 3px 3px 0 0;
+  }
+  .nav-tab:hover { color: white; }
+
+  /* ─── MAIN CONTENT ─── */
+  main { position: relative; z-index: 5; padding: 24px; max-width: 1400px; margin: 0 auto; }
+
+  .screen { display: none; }
+  .screen.active { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ─── HOME SCREEN ─── */
+  .home-hero {
+    text-align: center; padding: 40px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: var(--radius); color: white; margin-bottom: 32px;
+    position: relative; overflow: hidden;
+  }
+  .home-hero::before {
+    content: '🌍🦁🐘🦅🐊🦋🐬🦊';
+    position: absolute; font-size: 3rem; opacity: 0.15;
+    top: -10px; left: 0; right: 0; letter-spacing: 20px;
+    animation: scroll 20s linear infinite;
+  }
+  @keyframes scroll { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+  .home-hero h1 { font-family: 'Fredoka One', cursive; font-size: 3rem; margin-bottom: 12px; text-shadow: 3px 3px 0 rgba(0,0,0,0.2); }
+  .home-hero p { font-size: 1.2rem; opacity: 0.9; max-width: 600px; margin: 0 auto 24px; }
+
+  .category-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;
+  }
+  .category-card {
+    background: var(--card); border-radius: var(--radius); padding: 24px;
+    text-align: center; cursor: pointer;
+    box-shadow: var(--shadow); transition: all 0.3s;
+    border: 3px solid transparent; position: relative; overflow: hidden;
+  }
+  .category-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--cat-color, var(--primary));
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .category-card:hover { transform: translateY(-6px); border-color: var(--cat-color, var(--primary)); }
+  .category-card:hover::before { opacity: 0.08; }
+  .category-card .cat-icon { font-size: 3rem; margin-bottom: 12px; display: block; }
+  .category-card h3 { font-family: 'Fredoka One', cursive; font-size: 1.2rem; color: var(--dark); }
+  .category-card p { font-size: 0.85rem; color: #636e72; margin-top: 6px; }
+  .cat-progress-bar {
+    margin-top: 12px; height: 8px; background: #f0f0f0;
+    border-radius: 10px; overflow: hidden;
+  }
+  .cat-progress-fill { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
+  .cat-level-badge {
+    position: absolute; top: 12px; right: 12px;
+    background: var(--cat-color, var(--primary)); color: white;
+    font-size: 0.75rem; font-weight: 800; padding: 3px 8px;
+    border-radius: 20px;
+  }
+
+  /* ─── LEVEL SELECT ─── */
+  .level-select-header {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 24px;
+  }
+  .back-btn {
+    background: var(--dark); color: white; border: none;
+    border-radius: 50%; width: 44px; height: 44px; font-size: 1.2rem;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+  }
+  .back-btn:hover { background: var(--primary); transform: scale(1.1); }
+  .levels-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 16px; }
+  .level-btn {
+    border-radius: var(--radius); padding: 20px 12px;
+    text-align: center; cursor: pointer; border: none;
+    font-family: 'Fredoka One', cursive; font-size: 1.1rem;
+    transition: all 0.3s; position: relative;
+  }
+  .level-btn.locked {
+    background: #e0e0e0; color: #bbb; cursor: not-allowed;
+  }
+  .level-btn.unlocked {
+    background: linear-gradient(135deg, var(--secondary), #00b894);
+    color: white; box-shadow: 0 4px 15px rgba(78,205,196,0.4);
+  }
+  .level-btn.unlocked:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(78,205,196,0.5); }
+  .level-btn.completed {
+    background: linear-gradient(135deg, var(--accent), #fdcb6e);
+    color: var(--dark); box-shadow: 0 4px 15px rgba(255,230,109,0.4);
+  }
+  .level-btn .stars { font-size: 1.2rem; margin-top: 4px; }
+  .level-btn .lock-icon { font-size: 1.5rem; }
+
+  /* ─── GAME SCREEN ─── */
+  .game-header {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--dark); border-radius: var(--radius); padding: 16px 24px;
+    margin-bottom: 20px; color: white;
+  }
+  .game-info { display: flex; gap: 24px; align-items: center; }
+  .timer-display {
+    font-family: 'Fredoka One', cursive; font-size: 1.5rem;
+    color: var(--accent); display: flex; align-items: center; gap: 6px;
+  }
+  .timer-display.warning { color: var(--pink); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+  .score-display { font-family: 'Fredoka One', cursive; font-size: 1.3rem; color: var(--green); }
+  .progress-display { font-size: 0.9rem; color: rgba(255,255,255,0.7); }
+
+  .game-area { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 768px) { .game-area { grid-template-columns: 1fr; } }
+
+  .animals-pool {
+    background: var(--card); border-radius: var(--radius);
+    padding: 20px; box-shadow: var(--shadow);
+  }
+  .animals-pool h3 {
+    font-family: 'Fredoka One', cursive; color: var(--dark);
+    margin-bottom: 16px; font-size: 1.2rem;
+    padding-bottom: 10px; border-bottom: 3px dashed #f0f0f0;
+  }
+  .animals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; min-height: 200px; }
+
+  .animal-card {
+    background: white; border-radius: 16px; padding: 10px 6px;
+    text-align: center; cursor: grab; transition: all 0.2s;
+    border: 3px solid #f0f0f0; user-select: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .animal-card:hover { transform: scale(1.08); border-color: var(--primary); box-shadow: 0 6px 20px rgba(255,107,53,0.2); }
+  .animal-card.dragging { opacity: 0.5; transform: scale(1.1); cursor: grabbing; }
+  .animal-card.placed { opacity: 0; pointer-events: none; }
+  .animal-card.wrong { animation: shake 0.5s; border-color: var(--pink) !important; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-8px); }
+    80% { transform: translateX(8px); }
+  }
+  .animal-card.correct { animation: bounce 0.5s; border-color: var(--green) !important; }
+  @keyframes bounce {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+  .animal-emoji { font-size: 2.2rem; display: block; margin-bottom: 4px; }
+  .animal-img {
+    width: 56px; height: 56px; object-fit: cover; border-radius: 10px;
+    display: block; margin: 0 auto 4px;
+  }
+  .animal-name { font-size: 0.72rem; font-weight: 700; color: var(--dark); line-height: 1.2; }
+
+  .categories-panel { display: flex; flex-direction: column; gap: 12px; }
+  .drop-zone {
+    background: var(--card); border-radius: var(--radius); padding: 16px;
+    border: 3px dashed #e0e0e0; transition: all 0.3s; min-height: 100px;
+    box-shadow: var(--shadow);
+  }
+  .drop-zone.drag-over { border-color: var(--primary); background: rgba(255,107,53,0.05); transform: scale(1.02); }
+  .drop-zone.correct-drop { border-color: var(--green); background: rgba(85,239,196,0.1); animation: glowGreen 0.6s; }
+  @keyframes glowGreen { 0%,100% { box-shadow: var(--shadow); } 50% { box-shadow: 0 0 30px rgba(85,239,196,0.5); } }
+  .drop-zone-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+    padding-bottom: 10px; border-bottom: 2px solid #f0f0f0;
+  }
+  .drop-zone-icon { font-size: 1.8rem; }
+  .drop-zone-label { font-family: 'Fredoka One', cursive; font-size: 1.1rem; color: var(--dark); }
+  .drop-zone-count { margin-left: auto; background: var(--primary); color: white; border-radius: 20px; padding: 2px 10px; font-size: 0.8rem; font-weight: 800; }
+  .dropped-animals { display: flex; flex-wrap: wrap; gap: 6px; min-height: 40px; }
+  .dropped-animal {
+    background: var(--green); border-radius: 20px; padding: 4px 10px;
+    font-size: 0.75rem; font-weight: 700; color: var(--dark);
+    display: flex; align-items: center; gap: 4px;
+    animation: popIn 0.3s ease;
+  }
+  @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+
+  /* ─── RESULT MODAL ─── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    z-index: 1000; display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(8px); opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  }
+  .modal-overlay.active { opacity: 1; pointer-events: all; }
+  .modal {
+    background: white; border-radius: 30px; padding: 48px 40px; text-align: center;
+    max-width: 480px; width: 90%; transform: scale(0.8); transition: transform 0.3s;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+  }
+  .modal-overlay.active .modal { transform: scale(1); }
+  .modal-emoji { font-size: 5rem; margin-bottom: 16px; display: block; animation: spin 1s ease; }
+  @keyframes spin { from { transform: rotate(-180deg) scale(0); } to { transform: rotate(0) scale(1); } }
+  .modal h2 { font-family: 'Fredoka One', cursive; font-size: 2.2rem; margin-bottom: 12px; color: var(--dark); }
+  .modal-stars { font-size: 2rem; margin-bottom: 16px; }
+  .modal-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .modal-stat { background: var(--bg); border-radius: 16px; padding: 14px; }
+  .modal-stat-val { font-family: 'Fredoka One', cursive; font-size: 1.8rem; color: var(--primary); }
+  .modal-stat-label { font-size: 0.8rem; color: #636e72; }
+  .modal-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    font-family: 'Fredoka One', cursive; font-size: 1.1rem;
+    padding: 12px 28px; border-radius: 50px; border: none;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 15px rgba(255,107,53,0.4); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,107,53,0.5); }
+  .btn-secondary { background: var(--bg); color: var(--dark); border: 3px solid #e0e0e0; }
+  .btn-secondary:hover { border-color: var(--primary); }
+
+  /* ─── LEARN SCREEN ─── */
+  .learn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+  .learn-card {
+    background: white; border-radius: var(--radius); overflow: hidden;
+    box-shadow: var(--shadow); transition: all 0.3s; cursor: pointer;
+  }
+  .learn-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,0,0,0.15); }
+  .learn-card-img {
+    width: 100%; height: 140px; background: linear-gradient(135deg, #a8edea, #fed6e3);
+    display: flex; align-items: center; justify-content: center; font-size: 4rem;
+    position: relative; overflow: hidden;
+  }
+  .learn-card-img img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+  .learn-card-body { padding: 14px; }
+  .learn-card-name { font-family: 'Fredoka One', cursive; font-size: 1.1rem; color: var(--dark); margin-bottom: 4px; }
+  .learn-card-class { font-size: 0.75rem; color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .learn-card-desc { font-size: 0.8rem; color: #636e72; margin-top: 6px; line-height: 1.4; }
+  .learn-card.locked { filter: grayscale(1) brightness(0.7); cursor: not-allowed; }
+  .learn-card.locked::after {
+    content: '🔒'; position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; background: rgba(0,0,0,0.3); border-radius: var(--radius);
+  }
+  .learn-card { position: relative; }
+
+  /* ─── FILTERS ─── */
+  .filters {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px;
+    background: white; padding: 16px; border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+  .filter-btn {
+    font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.85rem;
+    padding: 6px 14px; border-radius: 20px; border: 2px solid #e0e0e0;
+    background: white; cursor: pointer; transition: all 0.2s;
+  }
+  .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+  .filter-btn:hover:not(.active) { border-color: var(--primary); }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed; top: 80px; left: 50%; transform: translateX(-50%) translateY(-100px);
+    background: var(--dark); color: white; padding: 12px 24px; border-radius: 50px;
+    font-weight: 700; font-size: 1rem; z-index: 9999; transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    display: flex; align-items: center; gap: 8px; white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ─── CONFETTI ─── */
+  .confetti-piece {
+    position: fixed; width: 10px; height: 10px; z-index: 9998;
+    animation: confettiFall 2s ease forwards;
+    pointer-events: none;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-10px) rotateZ(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotateZ(720deg); opacity: 0; }
+  }
+
+  /* ─── MISC ─── */
+  .section-title {
+    font-family: 'Fredoka One', cursive; font-size: 1.8rem; color: var(--dark);
+    margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-title span { color: var(--primary); }
+  .mode-toggle {
+    display: flex; gap: 8px; background: #f0f0f0; border-radius: 50px; padding: 4px;
+    margin-bottom: 20px; width: fit-content;
+  }
+  .mode-btn {
+    font-family: 'Fredoka One', cursive; font-size: 0.9rem;
+    padding: 8px 20px; border-radius: 40px; border: none; cursor: pointer;
+    transition: all 0.2s; color: #636e72; background: transparent;
+  }
+  .mode-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  
+  .unlocked-count {
+    background: linear-gradient(135deg, var(--accent), #fdcb6e);
+    color: var(--dark); border-radius: 50px; padding: 8px 20px;
+    font-weight: 800; font-size: 0.9rem; display: inline-block; margin-bottom: 20px;
+  }
+  
+  .game-question {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white; border-radius: var(--radius); padding: 16px 24px;
+    margin-bottom: 20px; text-align: center;
+  }
+  .game-question h2 { font-family: 'Fredoka One', cursive; font-size: 1.4rem; }
+  .game-question p { opacity: 0.85; font-size: 0.95rem; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<!-- Floating bubbles -->
+<div class="bubbles" id="bubbles"></div>
+
+<!-- Header -->
+<header>
+  <div class="logo">🐾 Mundo <span>Animal</span></div>
+  <div class="header-stats">
+    <div class="stat-badge">⭐ <span id="total-score">0</span> pts</div>
+    <div class="stat-badge">🔓 <span id="unlocked-count">0</span>/83</div>
+    <div class="stat-badge">🏆 <span id="levels-done">0</span> niveles</div>
+  </div>
+</header>
+
+<!-- Nav -->
+<nav class="nav-tabs">
+  <button class="nav-tab active" onclick="showScreen('home')">🏠 Inicio</button>
+  <button class="nav-tab" onclick="showScreen('game-categories')">🎮 Jugar</button>
+  <button class="nav-tab" onclick="showScreen('learn')">📚 Aprender</button>
+</nav>
+
+<!-- MAIN -->
+<main>
+
+  <!-- HOME SCREEN -->
+  <div class="screen active" id="screen-home">
+    <div class="home-hero">
+      <h1>¡Bienvenido al Mundo Animal! 🌍</h1>
+      <p>Aprende sobre animales mientras juegas a clasificarlos. ¡Diviértete y desbloquea información increíble!</p>
+      <button class="btn btn-primary" onclick="showScreen('game-categories')">¡Empezar a Jugar! 🎮</button>
+    </div>
+    <div class="section-title">Elige una categoría para clasificar <span>🎯</span></div>
+    <div class="category-grid" id="home-categories"></div>
+  </div>
+
+  <!-- GAME CATEGORIES SCREEN -->
+  <div class="screen" id="screen-game-categories">
+    <div class="section-title">¿Cómo quieres clasificar los animales? <span>🤔</span></div>
+    <div class="category-grid" id="game-categories-grid"></div>
+  </div>
+
+  <!-- LEVEL SELECT SCREEN -->
+  <div class="screen" id="screen-level-select">
+    <div class="level-select-header">
+      <button class="back-btn" onclick="showScreen('game-categories')">←</button>
+      <div>
+        <h2 class="section-title" style="margin:0" id="level-select-title">Selecciona Nivel</h2>
+        <p style="color:#636e72;font-size:0.9rem" id="level-select-desc"></p>
+      </div>
+    </div>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="mode-timed" onclick="setMode('timed')">⏱️ Con tiempo</button>
+      <button class="mode-btn" id="mode-free" onclick="setMode('free')">🌸 Sin tiempo</button>
+    </div>
+    <div class="levels-grid" id="levels-grid"></div>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div class="screen" id="screen-game">
+    <div class="game-header">
+      <button class="back-btn" onclick="exitGame()">←</button>
+      <div class="game-info">
+        <div class="timer-display" id="timer-display">⏱️ 60s</div>
+        <div class="score-display" id="score-display">⭐ 0</div>
+        <div class="progress-display" id="progress-display">0 / 0</div>
+      </div>
+      <div style="color:rgba(255,255,255,0.7);font-size:0.85rem" id="game-level-label">Nivel 1</div>
+    </div>
+    <div class="game-question">
+      <h2 id="game-question-title">Clasifica los animales</h2>
+      <p id="game-question-desc">Arrastra cada animal a su categoría correcta</p>
+    </div>
+    <div class="game-area">
+      <div class="animals-pool">
+        <h3 id="pool-title">🐾 Animales para clasificar</h3>
+        <div class="animals-grid" id="animals-pool-grid"></div>
+      </div>
+      <div class="categories-panel" id="categories-panel"></div>
+    </div>
+  </div>
+
+  <!-- LEARN SCREEN -->
+  <div class="screen" id="screen-learn">
+    <div class="section-title">📚 Aprende sobre los <span>Animales</span></div>
+    <div class="unlocked-count" id="learn-unlock-count">🔓 0 animales desbloqueados</div>
+    <div class="filters" id="learn-filters"></div>
+    <div class="learn-grid" id="learn-grid"></div>
+  </div>
+
+</main>
+
+<!-- RESULT MODAL -->
+<div class="modal-overlay" id="result-modal">
+  <div class="modal">
+    <span class="modal-emoji" id="modal-emoji">🎉</span>
+    <h2 id="modal-title">¡Excelente!</h2>
+    <div class="modal-stars" id="modal-stars">⭐⭐⭐</div>
+    <div class="modal-stats">
+      <div class="modal-stat">
+        <div class="modal-stat-val" id="modal-score">0</div>
+        <div class="modal-stat-label">Puntos</div>
+      </div>
+      <div class="modal-stat">
+        <div class="modal-stat-val" id="modal-time">0s</div>
+        <div class="modal-stat-label">Tiempo restante</div>
+      </div>
+      <div class="modal-stat">
+        <div class="modal-stat-val" id="modal-correct">0</div>
+        <div class="modal-stat-label">Correctos</div>
+      </div>
+      <div class="modal-stat">
+        <div class="modal-stat-val" id="modal-unlocked">0</div>
+        <div class="modal-stat-label">Desbloqueados</div>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn btn-secondary" onclick="closeModal(); exitGame();">🏠 Menú</button>
+      <button class="btn btn-primary" id="modal-next-btn" onclick="closeModal()">▶ Siguiente nivel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+const ANIMALS = [
+  {nombre:"León",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Sabana",reproduccion:"Vivíparo",continente:"África",emoji:"🦁",descripcion:"El león es conocido como el rey de la selva y vive en manadas."},
+  {nombre:"Elefante",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Sabana",reproduccion:"Vivíparo",continente:"África",emoji:"🐘",descripcion:"El elefante es el animal terrestre más grande del mundo."},
+  {nombre:"Tigre",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Selva",reproduccion:"Vivíparo",continente:"Asia",emoji:"🐯",descripcion:"El tigre tiene rayas únicas y es un gran cazador solitario."},
+  {nombre:"Jirafa",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Sabana",reproduccion:"Vivíparo",continente:"África",emoji:"🦒",descripcion:"La jirafa es el animal más alto del mundo con su largo cuello."},
+  {nombre:"Cebra",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Sabana",reproduccion:"Vivíparo",continente:"África",emoji:"🦓",descripcion:"La cebra tiene rayas únicas en blanco y negro para camuflarse."},
+  {nombre:"Oso",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Bosque",reproduccion:"Vivíparo",continente:"América",emoji:"🐻",descripcion:"El oso come frutas, miel y carne. ¡Le encanta la miel!"},
+  {nombre:"Lobo",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Bosque",reproduccion:"Vivíparo",continente:"Europa",emoji:"🐺",descripcion:"El lobo vive en manadas muy organizadas y aúlla a la luna."},
+  {nombre:"Zorro",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Bosque",reproduccion:"Vivíparo",continente:"Europa",emoji:"🦊",descripcion:"El zorro es muy ágil y astuto, famoso por su inteligencia."},
+  {nombre:"Perro",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Doméstico",reproduccion:"Vivíparo",continente:"Global",emoji:"🐶",descripcion:"El perro es el mejor amigo del humano desde hace miles de años."},
+  {nombre:"Gato",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Doméstico",reproduccion:"Vivíparo",continente:"Global",emoji:"🐱",descripcion:"El gato es muy curioso y ágil, puede caer siempre de pie."},
+  {nombre:"Águila",clase:"Ave",alimentacion:"Carnívoro",habitat:"Montaña",reproduccion:"Ovíparo",continente:"América",emoji:"🦅",descripcion:"El águila tiene una vista increíble y vuela muy alto."},
+  {nombre:"Gallina",clase:"Ave",alimentacion:"Omnívoro",habitat:"Granja",reproduccion:"Ovíparo",continente:"Global",emoji:"🐔",descripcion:"La gallina pone huevos y cuida mucho a sus pollitos."},
+  {nombre:"Pingüino",clase:"Ave",alimentacion:"Carnívoro",habitat:"Antártida",reproduccion:"Ovíparo",continente:"Antártida",emoji:"🐧",descripcion:"El pingüino es un ave que nada muy bien pero no puede volar."},
+  {nombre:"Loro",clase:"Ave",alimentacion:"Herbívoro",habitat:"Selva",reproduccion:"Ovíparo",continente:"América",emoji:"🦜",descripcion:"El loro puede imitar sonidos y palabras humanas."},
+  {nombre:"Búho",clase:"Ave",alimentacion:"Carnívoro",habitat:"Bosque",reproduccion:"Ovíparo",continente:"Europa",emoji:"🦉",descripcion:"El búho caza de noche y puede girar su cabeza casi 270°."},
+  {nombre:"Pato",clase:"Ave",alimentacion:"Omnívoro",habitat:"Lago",reproduccion:"Ovíparo",continente:"Global",emoji:"🦆",descripcion:"El pato puede nadar, volar y caminar. ¡Es muy versátil!"},
+  {nombre:"Flamenco",clase:"Ave",alimentacion:"Omnívoro",habitat:"Laguna",reproduccion:"Ovíparo",continente:"América",emoji:"🦩",descripcion:"El flamenco es rosado y muy elegante. Vive en grandes grupos."},
+  {nombre:"Avestruz",clase:"Ave",alimentacion:"Omnívoro",habitat:"Sabana",reproduccion:"Ovíparo",continente:"África",emoji:"🦤",descripcion:"El avestruz no puede volar pero corre más rápido que un caballo."},
+  {nombre:"Canario",clase:"Ave",alimentacion:"Herbívoro",habitat:"Bosque",reproduccion:"Ovíparo",continente:"Europa",emoji:"🐦",descripcion:"El canario tiene un canto muy bonito y melodioso."},
+  {nombre:"Cuervo",clase:"Ave",alimentacion:"Omnívoro",habitat:"Bosque",reproduccion:"Ovíparo",continente:"Global",emoji:"🐦‍⬛",descripcion:"El cuervo es una de las aves más inteligentes del mundo."},
+  {nombre:"Cocodrilo",clase:"Reptil",alimentacion:"Carnívoro",habitat:"Río",reproduccion:"Ovíparo",continente:"África",emoji:"🐊",descripcion:"El cocodrilo tiene la mordida más poderosa del reino animal."},
+  {nombre:"Tortuga",clase:"Reptil",alimentacion:"Herbívoro",habitat:"Playa",reproduccion:"Ovíparo",continente:"Global",emoji:"🐢",descripcion:"La tortuga tiene un caparazón que la protege y puede vivir 100 años."},
+  {nombre:"Serpiente",clase:"Reptil",alimentacion:"Carnívoro",habitat:"Selva",reproduccion:"Ovíparo",continente:"Global",emoji:"🐍",descripcion:"La serpiente no tiene patas y usa su lengua para oler el aire."},
+  {nombre:"Iguana",clase:"Reptil",alimentacion:"Herbívoro",habitat:"Selva",reproduccion:"Ovíparo",continente:"América",emoji:"🦎",descripcion:"La iguana es un lagarto que le encanta tomar el sol."},
+  {nombre:"Camaleón",clase:"Reptil",alimentacion:"Carnívoro",habitat:"Selva",reproduccion:"Ovíparo",continente:"África",emoji:"🦎",descripcion:"El camaleón cambia de color para comunicarse y camuflarse."},
+  {nombre:"Lagarto",clase:"Reptil",alimentacion:"Omnívoro",habitat:"Desierto",reproduccion:"Ovíparo",continente:"Global",emoji:"🦎",descripcion:"El lagarto es un reptil muy ágil que puede desprender su cola."},
+  {nombre:"Gecko",clase:"Reptil",alimentacion:"Carnívoro",habitat:"Selva",reproduccion:"Ovíparo",continente:"Asia",emoji:"🦎",descripcion:"El gecko puede trepar paredes y techos gracias a sus patas especiales."},
+  {nombre:"Anaconda",clase:"Reptil",alimentacion:"Carnívoro",habitat:"Río",reproduccion:"Vivíparo",continente:"América",emoji:"🐍",descripcion:"La anaconda es una serpiente gigante que puede medir más de 7 metros."},
+  {nombre:"Dragón de Komodo",clase:"Reptil",alimentacion:"Carnívoro",habitat:"Isla",reproduccion:"Ovíparo",continente:"Asia",emoji:"🦖",descripcion:"El dragón de Komodo es el lagarto más grande del mundo."},
+  {nombre:"Boa",clase:"Reptil",alimentacion:"Carnívoro",habitat:"Selva",reproduccion:"Vivíparo",continente:"América",emoji:"🐍",descripcion:"La boa constrictora aprieta a sus presas para atraparlas."},
+  {nombre:"Rana",clase:"Anfibio",alimentacion:"Carnívoro",habitat:"Pantano",reproduccion:"Ovíparo",continente:"Global",emoji:"🐸",descripcion:"La rana vive en el agua y en la tierra. ¡Salta muy lejos!"},
+  {nombre:"Sapo",clase:"Anfibio",alimentacion:"Carnívoro",habitat:"Bosque",reproduccion:"Ovíparo",continente:"Global",emoji:"🐸",descripcion:"El sapo tiene piel rugosa y puede ser venenoso para protegerse."},
+  {nombre:"Salamandra",clase:"Anfibio",alimentacion:"Carnívoro",habitat:"Bosque",reproduccion:"Ovíparo",continente:"Europa",emoji:"🦎",descripcion:"La salamandra tiene piel húmeda y necesita lugares mojados."},
+  {nombre:"Tritón",clase:"Anfibio",alimentacion:"Carnívoro",habitat:"Agua dulce",reproduccion:"Ovíparo",continente:"Europa",emoji:"🐊",descripcion:"El tritón es un pequeño anfibio que parece una salamandra acuática."},
+  {nombre:"Axolote",clase:"Anfibio",alimentacion:"Carnívoro",habitat:"Lago",reproduccion:"Ovíparo",continente:"América",emoji:"🦈",descripcion:"El axolote puede regenerar sus extremidades. ¡Es como tener superpoderes!"},
+  {nombre:"Tiburón",clase:"Pez",alimentacion:"Carnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Global",emoji:"🦈",descripcion:"El tiburón es el gran depredador del mar. Tiene varios filas de dientes."},
+  {nombre:"Salmón",clase:"Pez",alimentacion:"Omnívoro",habitat:"Río",reproduccion:"Ovíparo",continente:"Global",emoji:"🐟",descripcion:"El salmón nada contra la corriente para volver a donde nació."},
+  {nombre:"Atún",clase:"Pez",alimentacion:"Carnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Global",emoji:"🐟",descripcion:"El atún es uno de los peces más rápidos del océano."},
+  {nombre:"Pez payaso",clase:"Pez",alimentacion:"Omnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Oceanía",emoji:"🐠",descripcion:"El pez payaso vive entre las anémonas que lo protegen."},
+  {nombre:"Pez globo",clase:"Pez",alimentacion:"Omnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Asia",emoji:"🐡",descripcion:"El pez globo se infla como un globo para asustar a los depredadores."},
+  {nombre:"Anguila",clase:"Pez",alimentacion:"Carnívoro",habitat:"Río",reproduccion:"Ovíparo",continente:"Europa",emoji:"🐍",descripcion:"La anguila tiene el cuerpo muy alargado parecido a una serpiente."},
+  {nombre:"Caballito de mar",clase:"Pez",alimentacion:"Carnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Global",emoji:"🌊",descripcion:"En el caballito de mar, ¡es el papá quien cuida los huevos!"},
+  {nombre:"Piraña",clase:"Pez",alimentacion:"Carnívoro",habitat:"Río",reproduccion:"Ovíparo",continente:"América",emoji:"🐟",descripcion:"La piraña tiene dientes afilados como navajas y vive en ríos."},
+  {nombre:"Trucha",clase:"Pez",alimentacion:"Omnívoro",habitat:"Río",reproduccion:"Ovíparo",continente:"Europa",emoji:"🐟",descripcion:"La trucha vive en aguas frías y limpias de ríos y lagos."},
+  {nombre:"Mero",clase:"Pez",alimentacion:"Carnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Global",emoji:"🐠",descripcion:"El mero es un pez grande que puede cambiar de sexo durante su vida."},
+  {nombre:"Caballo",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Pradera",reproduccion:"Vivíparo",continente:"Global",emoji:"🐴",descripcion:"El caballo es rápido, fuerte y ha ayudado a los humanos por siglos."},
+  {nombre:"Vaca",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Granja",reproduccion:"Vivíparo",continente:"Global",emoji:"🐄",descripcion:"La vaca produce leche que tomamos todos los días."},
+  {nombre:"Cerdo",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Granja",reproduccion:"Vivíparo",continente:"Global",emoji:"🐷",descripcion:"El cerdo es un animal muy inteligente, más que los perros."},
+  {nombre:"Oveja",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Granja",reproduccion:"Vivíparo",continente:"Global",emoji:"🐑",descripcion:"La oveja nos da lana con la que hacemos ropa caliente."},
+  {nombre:"Cabra",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Montaña",reproduccion:"Vivíparo",continente:"Global",emoji:"🐐",descripcion:"La cabra puede trepar montañas muy empinadas sin caerse."},
+  {nombre:"Canguro",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Pradera",reproduccion:"Vivíparo",continente:"Oceanía",emoji:"🦘",descripcion:"La mamá canguro lleva a su bebé en una bolsa abdominal."},
+  {nombre:"Koala",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Bosque",reproduccion:"Vivíparo",continente:"Oceanía",emoji:"🐨",descripcion:"El koala duerme hasta 22 horas al día y solo come hojas de eucalipto."},
+  {nombre:"Dingo",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Desierto",reproduccion:"Vivíparo",continente:"Oceanía",emoji:"🐕",descripcion:"El dingo es un perro salvaje de Australia que vive en manadas."},
+  {nombre:"Mono",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Selva",reproduccion:"Vivíparo",continente:"América",emoji:"🐒",descripcion:"El mono es muy ágil y vive en árboles de la selva tropical."},
+  {nombre:"Chimpancé",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Selva",reproduccion:"Vivíparo",continente:"África",emoji:"🐒",descripcion:"El chimpancé es nuestro pariente más cercano y muy inteligente."},
+  {nombre:"Gorila",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Selva",reproduccion:"Vivíparo",continente:"África",emoji:"🦍",descripcion:"El gorila es el primate más grande y fuerte del mundo."},
+  {nombre:"Orangután",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Selva",reproduccion:"Vivíparo",continente:"Asia",emoji:"🦧",descripcion:"El orangután pasa la mayor parte de su vida en los árboles."},
+  {nombre:"Panda",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Bosque",reproduccion:"Vivíparo",continente:"Asia",emoji:"🐼",descripcion:"El panda gigante come bambú y es símbolo de conservación."},
+  {nombre:"Mapache",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Bosque",reproduccion:"Vivíparo",continente:"América",emoji:"🦝",descripcion:"El mapache tiene una máscara facial oscura y lavotea su comida."},
+  {nombre:"Ardilla",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Bosque",reproduccion:"Vivíparo",continente:"Global",emoji:"🐿",descripcion:"La ardilla guarda nueces para el invierno. ¡Tiene buena memoria!"},
+  {nombre:"Murciélago",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Cueva",reproduccion:"Vivíparo",continente:"Global",emoji:"🦇",descripcion:"El murciélago es el único mamífero que vuela. Usa el sonido para orientarse."},
+  {nombre:"Erizo",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Bosque",reproduccion:"Vivíparo",continente:"Europa",emoji:"🦔",descripcion:"El erizo tiene púas que lo protegen. Se hace una bolita cuando tiene miedo."},
+  {nombre:"Topo",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Subterráneo",reproduccion:"Vivíparo",continente:"Europa",emoji:"🐭",descripcion:"El topo vive bajo tierra y casi no ve porque vive en la oscuridad."},
+  {nombre:"Hiena",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Sabana",reproduccion:"Vivíparo",continente:"África",emoji:"🐕",descripcion:"La hiena tiene una risa característica y vive en grupos llamados clanes."},
+  {nombre:"Leopardo",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Selva",reproduccion:"Vivíparo",continente:"África",emoji:"🐆",descripcion:"El leopardo tiene manchas oscuras y es un cazador muy sigiloso."},
+  {nombre:"Jaguar",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Selva",reproduccion:"Vivíparo",continente:"América",emoji:"🐆",descripcion:"El jaguar es el felino más grande de América. ¡Sabe nadar muy bien!"},
+  {nombre:"Alce",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Bosque",reproduccion:"Vivíparo",continente:"Europa",emoji:"🦌",descripcion:"El alce tiene grandes cuernos llamados astas que cambia cada año."},
+  {nombre:"Reno",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Tundra",reproduccion:"Vivíparo",continente:"Europa",emoji:"🦌",descripcion:"El reno vive en el frío del norte y puede caminar en la nieve."},
+  {nombre:"Foca",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Océano",reproduccion:"Vivíparo",continente:"Antártida",emoji:"🦭",descripcion:"La foca nada muy bien y puede aguantar mucho tiempo sin respirar."},
+  {nombre:"Morsa",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Océano",reproduccion:"Vivíparo",continente:"Ártico",emoji:"🦭",descripcion:"La morsa tiene colmillos largos que usa para salir del agua y como arma."},
+  {nombre:"Pulpo",clase:"Molusco",alimentacion:"Carnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Global",emoji:"🐙",descripcion:"El pulpo tiene 8 brazos y puede cambiar de color para camuflarse."},
+  {nombre:"Calamar",clase:"Molusco",alimentacion:"Carnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Global",emoji:"🦑",descripcion:"El calamar nada muy rápido y expulsa tinta para escapar."},
+  {nombre:"Medusa",clase:"Cnidario",alimentacion:"Carnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Global",emoji:"🪼",descripcion:"La medusa puede picar con sus tentáculos. ¡No la toques en el mar!"},
+  {nombre:"Coral",clase:"Cnidario",alimentacion:"Omnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Global",emoji:"🪸",descripcion:"El coral forma arrecifes que son el hogar de miles de animales marinos."},
+  {nombre:"Cangrejo",clase:"Crustáceo",alimentacion:"Omnívoro",habitat:"Playa",reproduccion:"Ovíparo",continente:"Global",emoji:"🦀",descripcion:"El cangrejo camina de lado y tiene pinzas para defenderse."},
+  {nombre:"Langosta",clase:"Crustáceo",alimentacion:"Omnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Global",emoji:"🦞",descripcion:"La langosta tiene pinzas y antenas largas. Vive en el fondo del mar."},
+  {nombre:"Abeja",clase:"Insecto",alimentacion:"Herbívoro",habitat:"Colmena",reproduccion:"Ovíparo",continente:"Global",emoji:"🐝",descripcion:"La abeja produce miel y es muy importante para polinizar las flores."},
+  {nombre:"Mariposa",clase:"Insecto",alimentacion:"Herbívoro",habitat:"Jardín",reproduccion:"Ovíparo",continente:"Global",emoji:"🦋",descripcion:"La mariposa nace de una oruga y tiene alas muy coloridas."},
+  {nombre:"Hormiga",clase:"Insecto",alimentacion:"Omnívoro",habitat:"Tierra",reproduccion:"Ovíparo",continente:"Global",emoji:"🐜",descripcion:"La hormiga trabaja en equipo y puede cargar 50 veces su peso."},
+  {nombre:"Escarabajo",clase:"Insecto",alimentacion:"Omnívoro",habitat:"Bosque",reproduccion:"Ovíparo",continente:"Global",emoji:"🪲",descripcion:"El escarabajo tiene un caparazón duro que protege sus alas para volar."},
+  {nombre:"Mosca",clase:"Insecto",alimentacion:"Omnívoro",habitat:"Global",reproduccion:"Ovíparo",continente:"Global",emoji:"🪰",descripcion:"La mosca vuela muy rápido y puede detectar el peligro casi al instante."},
+  {nombre:"Mosquito",clase:"Insecto",alimentacion:"Carnívoro",habitat:"Agua",reproduccion:"Ovíparo",continente:"Global",emoji:"🦟",descripcion:"El mosquito usa su trompa para picar y tomar sangre."}
+];
+
+const CATEGORIES = [
+  {
+    id: 'alimentacion',
+    name: 'Alimentación',
+    icon: '🍖',
+    color: '#e17055',
+    desc: 'Carnívoro, Herbívoro u Omnívoro',
+    field: 'alimentacion',
+    options: [
+      {label:'Carnívoro 🥩', value:'Carnívoro', icon:'🥩'},
+      {label:'Herbívoro 🌿', value:'Herbívoro', icon:'🌿'},
+      {label:'Omnívoro 🍽️', value:'Omnívoro', icon:'🍽️'}
+    ],
+    question: '¿Qué comen estos animales?',
+    questionDesc: 'Clasifícalos según su tipo de alimentación'
+  },
+  {
+    id: 'habitat',
+    name: 'Hábitat',
+    icon: '🌍',
+    color: '#00b894',
+    desc: 'Selva, Océano, Bosque y más',
+    field: 'habitat',
+    options: [
+      {label:'Selva 🌴', value:'Selva', icon:'🌴'},
+      {label:'Océano 🌊', value:'Océano', icon:'🌊'},
+      {label:'Bosque 🌲', value:'Bosque', icon:'🌲'},
+      {label:'Sabana 🦒', value:'Sabana', icon:'🦒'},
+      {label:'Río 🏞️', value:'Río', icon:'🏞️'},
+      {label:'Desierto 🏜️', value:'Desierto', icon:'🏜️'},
+      {label:'Montaña ⛰️', value:'Montaña', icon:'⛰️'},
+      {label:'Lago 🏔️', value:'Lago', icon:'🏔️'},
+      {label:'Doméstico 🏠', value:'Doméstico', icon:'🏠'},
+      {label:'Otros 🌐', value:'otros-habitat', icon:'🌐',
+       includes:['Granja','Playa','Pantano','Antártida','Cueva','Pradera','Tundra','Subterráneo','Agua dulce','Laguna','Colmena','Jardín','Tierra','Agua','Global','Isla','Agua','Colmena']}
+    ],
+    question: '¿Dónde viven estos animales?',
+    questionDesc: 'Arrastra cada animal a su hábitat natural'
+  },
+  {
+    id: 'reproduccion',
+    name: 'Reproducción',
+    icon: '🥚',
+    color: '#fdcb6e',
+    desc: 'Ovíparo o Vivíparo',
+    field: 'reproduccion',
+    options: [
+      {label:'Ovíparo 🥚', value:'Ovíparo', icon:'🥚'},
+      {label:'Vivíparo 🤱', value:'Vivíparo', icon:'🤱'}
+    ],
+    question: '¿Cómo nacen estos animales?',
+    questionDesc: 'Los ovíparos nacen de huevos, los vivíparos nacen de su mamá'
+  },
+  {
+    id: 'clase',
+    name: 'Clase Animal',
+    icon: '🔬',
+    color: '#a29bfe',
+    desc: 'Mamífero, Ave, Reptil, Anfibio y más',
+    field: 'clase',
+    options: [
+      {label:'Mamífero 🐾', value:'Mamífero', icon:'🐾'},
+      {label:'Ave 🦅', value:'Ave', icon:'🦅'},
+      {label:'Reptil 🦎', value:'Reptil', icon:'🦎'},
+      {label:'Anfibio 🐸', value:'Anfibio', icon:'🐸'},
+      {label:'Pez 🐟', value:'Pez', icon:'🐟'},
+      {label:'Insecto 🐜', value:'Insecto', icon:'🐜'},
+      {label:'Otros 🐙', value:'otros-clase', icon:'🐙',
+       includes:['Molusco','Cnidario','Crustáceo']}
+    ],
+    question: '¿A qué grupo pertenecen?',
+    questionDesc: 'Cada animal tiene una clasificación científica'
+  },
+  {
+    id: 'continente',
+    name: 'Continente',
+    icon: '🌎',
+    color: '#74b9ff',
+    desc: 'África, Asia, América y más',
+    field: 'continente',
+    options: [
+      {label:'África 🌍', value:'África', icon:'🌍'},
+      {label:'Asia 🌏', value:'Asia', icon:'🌏'},
+      {label:'América 🌎', value:'América', icon:'🌎'},
+      {label:'Europa 🏰', value:'Europa', icon:'🏰'},
+      {label:'Oceanía 🦘', value:'Oceanía', icon:'🦘'},
+      {label:'Global 🌐', value:'Global', icon:'🌐'},
+      {label:'Otros ❄️', value:'otros-continente', icon:'❄️',
+       includes:['Antártida','Ártico']}
+    ],
+    question: '¿En qué continente viven?',
+    questionDesc: 'Ubica a cada animal en su continente de origen'
+  }
+];
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let state = {
+  totalScore: 0,
+  unlockedAnimals: new Set(),
+  levelProgress: {}, // catId -> { level: n, stars: n, score: n }
+  currentCat: null,
+  currentLevel: null,
+  gameMode: 'timed'
+};
+
+let gameState = {
+  animals: [], // current level animals
+  placed: {}, // animalName -> categoryValue
+  correct: 0,
+  wrong: 0,
+  score: 0,
+  timeLeft: 60,
+  timer: null,
+  started: false,
+  timeUsed: 0
+};
+
+// Load from localStorage
+function loadState() {
+  try {
+    const s = localStorage.getItem('mundoanimal-state');
+    if (s) {
+      const parsed = JSON.parse(s);
+      state.totalScore = parsed.totalScore || 0;
+      state.unlockedAnimals = new Set(parsed.unlockedAnimals || []);
+      state.levelProgress = parsed.levelProgress || {};
+    }
+  } catch(e) {}
+}
+
+function saveState() {
+  localStorage.setItem('mundoanimal-state', JSON.stringify({
+    totalScore: state.totalScore,
+    unlockedAnimals: [...state.unlockedAnimals],
+    levelProgress: state.levelProgress
+  }));
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  
+  const screenMap = {
+    'home': 'screen-home',
+    'game-categories': 'screen-game-categories',
+    'level-select': 'screen-level-select',
+    'game': 'screen-game',
+    'learn': 'screen-learn'
+  };
+  
+  const tabMap = {
+    'home': 0, 'game-categories': 1, 'level-select': 1, 'game': 1, 'learn': 2
+  };
+  
+  document.getElementById(screenMap[name]).classList.add('active');
+  const tabs = document.querySelectorAll('.nav-tab');
+  if (tabs[tabMap[name]]) tabs[tabMap[name]].classList.add('active');
+  
+  if (name === 'home') renderHome();
+  if (name === 'game-categories') renderGameCategories();
+  if (name === 'learn') renderLearn();
+  
+  updateHeaderStats();
+}
+
+// ═══════════════════════════════════════════
+// BUBBLES
+// ═══════════════════════════════════════════
+function createBubbles() {
+  const container = document.getElementById('bubbles');
+  const colors = ['#ff6b35','#4ecdc4','#ffe66d','#a29bfe','#fd79a8','#74b9ff'];
+  for (let i = 0; i < 12; i++) {
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    const size = 20 + Math.random() * 80;
+    b.style.cssText = `
+      width:${size}px; height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      left:${Math.random()*100}%;
+      animation-duration:${8+Math.random()*15}s;
+      animation-delay:${Math.random()*10}s;
+    `;
+    container.appendChild(b);
+  }
+}
+
+// ═══════════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════════
+function renderHome() {
+  const grid = document.getElementById('home-categories');
+  grid.innerHTML = CATEGORIES.map(cat => {
+    const prog = state.levelProgress[cat.id] || {};
+    const maxLevel = Object.keys(prog).length;
+    const pct = (maxLevel / 10) * 100;
+    return `
+      <div class="category-card" style="--cat-color:${cat.color}" onclick="selectCategory('${cat.id}'); showScreen('level-select')">
+        <div class="cat-level-badge">Nv. ${maxLevel}/10</div>
+        <span class="cat-icon">${cat.icon}</span>
+        <h3>${cat.name}</h3>
+        <p>${cat.desc}</p>
+        <div class="cat-progress-bar">
+          <div class="cat-progress-fill" style="width:${pct}%;background:${cat.color}"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// GAME CATEGORIES
+// ═══════════════════════════════════════════
+function renderGameCategories() {
+  const grid = document.getElementById('game-categories-grid');
+  grid.innerHTML = CATEGORIES.map(cat => {
+    const prog = state.levelProgress[cat.id] || {};
+    const maxLevel = Object.keys(prog).length;
+    const pct = (maxLevel / 10) * 100;
+    return `
+      <div class="category-card" style="--cat-color:${cat.color}" onclick="selectCategory('${cat.id}'); showScreen('level-select')">
+        <div class="cat-level-badge">Nv. ${maxLevel}/10</div>
+        <span class="cat-icon">${cat.icon}</span>
+        <h3>${cat.name}</h3>
+        <p>${cat.desc}</p>
+        <div class="cat-progress-bar">
+          <div class="cat-progress-fill" style="width:${pct}%;background:${cat.color}"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// LEVEL SELECT
+// ═══════════════════════════════════════════
+function selectCategory(catId) {
+  state.currentCat = CATEGORIES.find(c => c.id === catId);
+  renderLevelSelect();
+}
+
+function renderLevelSelect() {
+  const cat = state.currentCat;
+  document.getElementById('level-select-title').innerHTML = `${cat.icon} ${cat.name} <span style="color:var(--primary)">→ Niveles</span>`;
+  document.getElementById('level-select-desc').textContent = cat.desc;
+  
+  const prog = state.levelProgress[cat.id] || {};
+  const maxUnlocked = Object.keys(prog).length + 1;
+  
+  const grid = document.getElementById('levels-grid');
+  grid.innerHTML = Array.from({length:10}, (_,i) => {
+    const level = i + 1;
+    const levelProg = prog[level];
+    const unlocked = level <= maxUnlocked;
+    
+    if (!unlocked) return `
+      <div class="level-btn locked">
+        <div class="lock-icon">🔒</div>
+        <div>Nivel ${level}</div>
+      </div>
+    `;
+    
+    const stars = levelProg ? levelProg.stars : 0;
+    const starsHtml = levelProg ? '⭐'.repeat(stars) + '☆'.repeat(3-stars) : '';
+    
+    return `
+      <div class="level-btn ${levelProg ? 'completed' : 'unlocked'}" onclick="startLevel(${level})">
+        <div style="font-size:1.4rem">${levelProg ? '✅' : level}</div>
+        <div>Nivel ${level}</div>
+        ${levelProg ? `<div class="stars">${starsHtml}</div>` : '<div style="font-size:0.75rem;opacity:0.8">¡Nuevo!</div>'}
+      </div>
+    `;
+  }).join('');
+}
+
+function setMode(mode) {
+  state.gameMode = mode;
+  document.getElementById('mode-timed').classList.toggle('active', mode === 'timed');
+  document.getElementById('mode-free').classList.toggle('active', mode === 'free');
+}
+
+// ═══════════════════════════════════════════
+// GAME
+// ═══════════════════════════════════════════
+function getLevelAnimals(cat, level) {
+  // Get animals that are relevant to this category
+  const allAnimals = [...ANIMALS];
+  shuffle(allAnimals);
+  
+  // Level config
+  const configs = [
+    {count:4, opts:2}, {count:5, opts:2}, {count:6, opts:3},
+    {count:6, opts:3}, {count:7, opts:3}, {count:7, opts:4},
+    {count:8, opts:4}, {count:8, opts:5}, {count:9, opts:5},
+    {count:10, opts:null}
+  ];
+  const cfg = configs[level-1];
+  
+  // Filter options that have animals
+  let activeOpts = cat.options;
+  if (cfg.opts !== null) {
+    activeOpts = cat.options.slice(0, cfg.opts);
+  }
+  
+  // Filter animals that match active options
+  const matching = allAnimals.filter(a => {
+    const val = a[cat.field];
+    return activeOpts.some(opt => {
+      if (opt.includes) return opt.includes.includes(val);
+      return val === opt.value;
+    });
+  });
+  
+  return { animals: matching.slice(0, cfg.count), activeOpts };
+}
+
+function getAnimalCategory(animal, cat) {
+  const val = animal[cat.field];
+  for (const opt of cat.options) {
+    if (opt.includes && opt.includes.includes(val)) return opt.value;
+    if (!opt.includes && val === opt.value) return opt.value;
+  }
+  return val;
+}
+
+function startLevel(level) {
+  state.currentLevel = level;
+  const cat = state.currentCat;
+  const { animals, activeOpts } = getLevelAnimals(cat, level);
+  
+  const timeMap = [90,80,75,70,65,60,55,50,45,40];
+  const time = timeMap[level-1];
+  
+  gameState = {
+    animals,
+    activeOpts,
+    placed: {},
+    correct: 0,
+    wrong: 0,
+    score: 0,
+    timeLeft: time,
+    maxTime: time,
+    timer: null,
+    started: false
+  };
+  
+  renderGame();
+  showScreen('game');
+  
+  setTimeout(() => {
+    if (state.gameMode === 'timed') startTimer();
+    gameState.started = true;
+  }, 500);
+}
+
+function renderGame() {
+  const cat = state.currentCat;
+  const level = state.currentLevel;
+  
+  document.getElementById('game-level-label').textContent = `${cat.name} – Nivel ${level}`;
+  document.getElementById('game-question-title').textContent = cat.question;
+  document.getElementById('game-question-desc').textContent = cat.questionDesc;
+  document.getElementById('score-display').textContent = `⭐ 0`;
+  document.getElementById('progress-display').textContent = `0 / ${gameState.animals.length}`;
+  
+  if (state.gameMode === 'free') {
+    document.getElementById('timer-display').textContent = '🌸 Sin tiempo';
+    document.getElementById('timer-display').className = 'timer-display';
+  } else {
+    updateTimer();
+  }
+  
+  // Render animals pool
+  const pool = document.getElementById('animals-pool-grid');
+  pool.innerHTML = gameState.animals.map(a => `
+    <div class="animal-card" id="card-${sanitize(a.nombre)}"
+      draggable="true"
+      ondragstart="dragStart(event,'${a.nombre}')"
+      ondragend="dragEnd(event)"
+      ontouchstart="touchStart(event,'${a.nombre}')"
+      ontouchmove="touchMove(event)"
+      ontouchend="touchEnd(event,'${a.nombre}')">
+      <span class="pool-emoji-${sanitize(a.nombre)}" style="font-size:2.2rem;display:block;margin-bottom:4px;transition:opacity 0.3s">${a.emoji}</span>
+      <img class="pool-img-${sanitize(a.nombre)}" style="display:none;width:56px;height:56px;object-fit:cover;border-radius:10px;margin:0 auto 4px" alt="${a.nombre}">
+      <div class="animal-name">${a.nombre}</div>
+    </div>
+  `).join('');
+
+  // Cargar imágenes locales en las tarjetas del juego
+  gameState.animals.forEach((a) => {
+    const imgEl = pool.querySelector(`.pool-img-${sanitize(a.nombre)}`);
+    const emojiEl = pool.querySelector(`.pool-emoji-${sanitize(a.nombre)}`);
+    if (imgEl) applyLocalImage(a.nombre, imgEl, emojiEl);
+  });
+  
+  // Render drop zones
+  const panel = document.getElementById('categories-panel');
+  panel.innerHTML = gameState.activeOpts.map(opt => `
+    <div class="drop-zone" id="zone-${sanitize(opt.value)}"
+      ondragover="dragOver(event)"
+      ondragleave="dragLeave(event)"
+      ondrop="dropAnimal(event,'${opt.value}')">
+      <div class="drop-zone-header">
+        <span class="drop-zone-icon">${opt.icon}</span>
+        <span class="drop-zone-label">${opt.label}</span>
+        <span class="drop-zone-count" id="count-${sanitize(opt.value)}">0</span>
+      </div>
+      <div class="dropped-animals" id="dropped-${sanitize(opt.value)}"></div>
+    </div>
+  `).join('');
+}
+
+function sanitize(s) { return s.replace(/[^a-z0-9]/gi, '_'); }
+
+let draggedAnimal = null;
+let touchClone = null;
+let touchTarget = null;
+
+function dragStart(e, name) {
+  draggedAnimal = name;
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function dragEnd(e) { e.target.classList.remove('dragging'); }
+function dragOver(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+function dragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+
+function dropAnimal(e, zoneValue) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!draggedAnimal) return;
+  placeAnimal(draggedAnimal, zoneValue, e.currentTarget);
+  draggedAnimal = null;
+}
+
+// Touch support
+function touchStart(e, name) {
+  draggedAnimal = name;
+  const card = e.currentTarget;
+  touchClone = card.cloneNode(true);
+  touchClone.style.cssText = `position:fixed;z-index:9999;opacity:0.8;pointer-events:none;transform:scale(1.1);width:${card.offsetWidth}px;`;
+  document.body.appendChild(touchClone);
+  const touch = e.touches[0];
+  touchClone.style.left = (touch.clientX - card.offsetWidth/2) + 'px';
+  touchClone.style.top = (touch.clientY - card.offsetHeight/2) + 'px';
+}
+function touchMove(e) {
+  if (!touchClone) return;
+  e.preventDefault();
+  const touch = e.touches[0];
+  touchClone.style.left = (touch.clientX - 45) + 'px';
+  touchClone.style.top = (touch.clientY - 45) + 'px';
+  
+  // Highlight drop zone
+  touchClone.style.display = 'none';
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  touchClone.style.display = '';
+  document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
+  const zone = el?.closest('.drop-zone');
+  if (zone) zone.classList.add('drag-over');
+  touchTarget = zone;
+}
+function touchEnd(e, name) {
+  if (touchClone) { touchClone.remove(); touchClone = null; }
+  document.querySelectorAll('.drop-zone').forEach(z => z.classList.remove('drag-over'));
+  if (touchTarget) {
+    const zoneId = touchTarget.id.replace('zone-','').replace(/_/g, ' ');
+    // Find actual zone value
+    const zoneVal = touchTarget.dataset.value || getZoneValue(touchTarget.id);
+    placeAnimal(name, zoneVal, touchTarget);
+    touchTarget = null;
+  }
+  draggedAnimal = null;
+}
+
+function getZoneValue(zoneId) {
+  const sans = zoneId.replace('zone-','');
+  const opt = gameState.activeOpts.find(o => sanitize(o.value) === sans);
+  return opt ? opt.value : sans.replace(/_/g,' ');
+}
+
+function placeAnimal(animalName, zoneValue, zoneEl) {
+  if (gameState.placed[animalName]) return; // already placed
+  
+  const animal = ANIMALS.find(a => a.nombre === animalName);
+  const correctVal = getAnimalCategory(animal, state.currentCat);
+  const card = document.getElementById('card-' + sanitize(animalName));
+  
+  if (correctVal === zoneValue) {
+    // CORRECT
+    gameState.correct++;
+    gameState.placed[animalName] = zoneValue;
+    
+    card.classList.add('correct');
+    setTimeout(() => card.classList.add('placed'), 400);
+    
+    const droppedArea = document.getElementById('dropped-' + sanitize(zoneValue));
+    droppedArea.innerHTML += `<div class="dropped-animal">${animal.emoji} ${animal.nombre}</div>`;
+    
+    const cnt = document.getElementById('count-' + sanitize(zoneValue));
+    cnt.textContent = parseInt(cnt.textContent) + 1;
+    
+    zoneEl.classList.add('correct-drop');
+    setTimeout(() => zoneEl.classList.remove('correct-drop'), 600);
+    
+    gameState.score += 100 + (state.gameMode === 'timed' ? Math.floor(gameState.timeLeft * 2) : 0);
+    playSound('correct');
+    showConfetti(3);
+    
+    // Unlock animal
+    if (!state.unlockedAnimals.has(animalName)) {
+      state.unlockedAnimals.add(animalName);
+      showToast(`🔓 ¡${animalName} desbloqueado en Aprende!`);
+    }
+    
+    updateGameUI();
+    
+    if (gameState.correct === gameState.animals.length) {
+      setTimeout(levelComplete, 600);
+    }
+  } else {
+    // WRONG
+    gameState.wrong++;
+    card.classList.add('wrong');
+    setTimeout(() => card.classList.remove('wrong'), 500);
+    playSound('wrong');
+    gameState.score = Math.max(0, gameState.score - 20);
+    updateGameUI();
+    showToast('❌ ¡Intenta de nuevo!');
+  }
+  
+  document.getElementById('score-display').textContent = `⭐ ${gameState.score}`;
+}
+
+function updateGameUI() {
+  document.getElementById('progress-display').textContent = `${gameState.correct} / ${gameState.animals.length}`;
+  document.getElementById('score-display').textContent = `⭐ ${gameState.score}`;
+}
+
+function startTimer() {
+  updateTimer();
+  gameState.timer = setInterval(() => {
+    gameState.timeLeft--;
+    updateTimer();
+    if (gameState.timeLeft <= 0) {
+      clearInterval(gameState.timer);
+      levelFailed();
+    }
+  }, 1000);
+}
+
+function updateTimer() {
+  const el = document.getElementById('timer-display');
+  el.textContent = `⏱️ ${gameState.timeLeft}s`;
+  el.className = 'timer-display' + (gameState.timeLeft <= 15 ? ' warning' : '');
+}
+
+function levelComplete() {
+  clearInterval(gameState.timer);
+  
+  const cat = state.currentCat;
+  const level = state.currentLevel;
+  const timeBonus = state.gameMode === 'timed' ? gameState.timeLeft * 5 : 50;
+  const totalScore = gameState.score + timeBonus;
+  
+  let stars = 1;
+  const pct = gameState.correct / gameState.animals.length;
+  if (pct === 1 && gameState.wrong === 0) stars = 3;
+  else if (pct === 1) stars = 2;
+  
+  // Save progress
+  if (!state.levelProgress[cat.id]) state.levelProgress[cat.id] = {};
+  const prev = state.levelProgress[cat.id][level];
+  if (!prev || prev.stars < stars) {
+    state.levelProgress[cat.id][level] = { stars, score: totalScore };
+  }
+  state.totalScore += totalScore;
+  saveState();
+  updateHeaderStats();
+  
+  // Show modal
+  document.getElementById('modal-emoji').textContent = stars === 3 ? '🏆' : stars === 2 ? '🎉' : '👍';
+  document.getElementById('modal-title').textContent = stars === 3 ? '¡Perfecto!' : stars === 2 ? '¡Muy bien!' : '¡Bien hecho!';
+  document.getElementById('modal-stars').textContent = '⭐'.repeat(stars) + '☆'.repeat(3-stars);
+  document.getElementById('modal-score').textContent = totalScore;
+  document.getElementById('modal-time').textContent = state.gameMode === 'timed' ? gameState.timeLeft + 's' : '∞';
+  document.getElementById('modal-correct').textContent = gameState.correct;
+  document.getElementById('modal-unlocked').textContent = state.unlockedAnimals.size;
+  
+  const nextBtn = document.getElementById('modal-next-btn');
+  if (level < 10) {
+    nextBtn.textContent = '▶ Nivel ' + (level+1);
+    nextBtn.onclick = () => { closeModal(); startLevel(level+1); };
+  } else {
+    nextBtn.textContent = '🏠 Categorías';
+    nextBtn.onclick = () => { closeModal(); showScreen('game-categories'); };
+  }
+  
+  showConfetti(15);
+  playSound('win');
+  document.getElementById('result-modal').classList.add('active');
+}
+
+function levelFailed() {
+  document.getElementById('modal-emoji').textContent = '⏰';
+  document.getElementById('modal-title').textContent = '¡Se acabó el tiempo!';
+  document.getElementById('modal-stars').textContent = '☆☆☆';
+  document.getElementById('modal-score').textContent = gameState.score;
+  document.getElementById('modal-time').textContent = '0s';
+  document.getElementById('modal-correct').textContent = gameState.correct;
+  document.getElementById('modal-unlocked').textContent = state.unlockedAnimals.size;
+  
+  const nextBtn = document.getElementById('modal-next-btn');
+  nextBtn.textContent = '🔄 Reintentar';
+  nextBtn.onclick = () => { closeModal(); startLevel(state.currentLevel); };
+  
+  document.getElementById('result-modal').classList.add('active');
+}
+
+function closeModal() { document.getElementById('result-modal').classList.remove('active'); }
+function exitGame() {
+  clearInterval(gameState.timer);
+  showScreen('level-select');
+  renderLevelSelect();
+}
+
+// ═══════════════════════════════════════════
+// LEARN
+// ═══════════════════════════════════════════
+let learnFilter = 'Todos';
+function renderLearn() {
+  const unlocked = state.unlockedAnimals;
+  document.getElementById('learn-unlock-count').textContent = `🔓 ${unlocked.size} de ${ANIMALS.length} animales desbloqueados`;
+  
+  // Filters
+  const classes = ['Todos', ...new Set(ANIMALS.map(a => a.clase))];
+  document.getElementById('learn-filters').innerHTML = classes.map(c => `
+    <button class="filter-btn ${learnFilter===c?'active':''}" onclick="setLearnFilter('${c}')">${c}</button>
+  `).join('');
+  
+  // Grid
+  const filtered = ANIMALS.filter(a => learnFilter === 'Todos' || a.clase === learnFilter);
+  const grid = document.getElementById('learn-grid');
+  grid.innerHTML = filtered.map(a => {
+    const isUnlocked = unlocked.has(a.nombre);
+    const clickHandler = isUnlocked ? `onclick="showAnimalDetail(ANIMALS.find(x=>x.nombre==='${a.nombre.replace(/'/g,"\\'")}'))"` : '';
+    return `
+      <div class="learn-card ${isUnlocked?'':'locked'}" ${clickHandler} data-animal="${a.nombre}">
+        <div class="learn-card-img">
+          <span class="card-emoji-${sanitize(a.nombre)}" style="font-size:4rem;transition:opacity 0.4s">${a.emoji}</span>
+          <img class="card-img-${sanitize(a.nombre)}"
+               style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none"
+               alt="${a.nombre}">
+        </div>
+        <div class="learn-card-body">
+          <div class="learn-card-name">${isUnlocked ? a.nombre : '???'}</div>
+          <div class="learn-card-class">${isUnlocked ? a.clase : '???'}</div>
+          ${isUnlocked
+            ? `<div class="learn-card-desc">${a.descripcion}</div>
+               <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px">
+                 <span style="background:#f0f0f0;border-radius:10px;padding:2px 8px;font-size:0.7rem">🍽️ ${a.alimentacion}</span>
+                 <span style="background:#f0f0f0;border-radius:10px;padding:2px 8px;font-size:0.7rem">🌍 ${a.continente}</span>
+                 <span style="background:#f0f0f0;border-radius:10px;padding:2px 8px;font-size:0.7rem">🥚 ${a.reproduccion}</span>
+               </div>
+               <div style="margin-top:10px;font-size:0.75rem;color:var(--secondary);font-weight:700">👆 Toca para saber más</div>`
+            : '<div class="learn-card-desc">¡Juega para descubrir este animal!</div>'}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Carga imágenes locales de animales desbloqueados
+  filtered.forEach((a) => {
+    if (!unlocked.has(a.nombre)) return;
+    const imgEl = grid.querySelector(`.card-img-${sanitize(a.nombre)}`);
+    const emojiEl = grid.querySelector(`.card-emoji-${sanitize(a.nombre)}`);
+    if (imgEl) applyLocalImage(a.nombre, imgEl, emojiEl);
+  });
+}
+
+function setLearnFilter(f) { learnFilter = f; renderLearn(); }
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function updateHeaderStats() {
+  document.getElementById('total-score').textContent = state.totalScore;
+  document.getElementById('unlocked-count').textContent = state.unlockedAnimals.size;
+  let done = 0;
+  Object.values(state.levelProgress).forEach(p => done += Object.keys(p).length);
+  document.getElementById('levels-done').textContent = done;
+}
+
+function shuffle(arr) {
+  for (let i = arr.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function showConfetti(count) {
+  const colors = ['#ff6b35','#4ecdc4','#ffe66d','#a29bfe','#fd79a8','#74b9ff','#55efc4'];
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const p = document.createElement('div');
+      p.className = 'confetti-piece';
+      p.style.cssText = `
+        left:${10+Math.random()*80}%;
+        top:${Math.random()*20}%;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        border-radius:${Math.random()>0.5?'50%':'0'};
+        animation-delay:${Math.random()*0.5}s;
+        animation-duration:${1.5+Math.random()}s;
+      `;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 2500);
+    }, i * 80);
+  }
+}
+
+// Simple audio using Web Audio API
+let audioCtx;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playSound(type) {
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    
+    if (type === 'correct') {
+      osc.frequency.setValueAtTime(523, ctx.currentTime);
+      osc.frequency.setValueAtTime(659, ctx.currentTime + 0.1);
+      osc.frequency.setValueAtTime(784, ctx.currentTime + 0.2);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+      osc.start(); osc.stop(ctx.currentTime + 0.5);
+    } else if (type === 'wrong') {
+      osc.frequency.setValueAtTime(200, ctx.currentTime);
+      osc.frequency.setValueAtTime(150, ctx.currentTime + 0.2);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+      osc.start(); osc.stop(ctx.currentTime + 0.3);
+    } else if (type === 'win') {
+      const notes = [523,587,659,698,784,880,987,1047];
+      notes.forEach((f,i) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.connect(g); g.connect(ctx.destination);
+        o.frequency.value = f;
+        g.gain.setValueAtTime(0.2, ctx.currentTime + i*0.08);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.08 + 0.3);
+        o.start(ctx.currentTime + i*0.08);
+        o.stop(ctx.currentTime + i*0.08 + 0.3);
+      });
+    }
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════
+// IMAGE SYSTEM — Carpeta /images/ local
+// Nombres de archivo: sin tildes, sin espacios,
+// sin caracteres especiales, en minúsculas.
+// El nombre visible en pantalla NO cambia.
+// ═══════════════════════════════════════════
+
+const IMG_FILENAMES = {
+  'León':             'leon',
+  'Elefante':         'elefante',
+  'Tigre':            'tigre',
+  'Jirafa':           'jirafa',
+  'Cebra':            'cebra',
+  'Oso':              'oso',
+  'Lobo':             'lobo',
+  'Zorro':            'zorro',
+  'Perro':            'perro',
+  'Gato':             'gato',
+  'Águila':           'aguila',
+  'Gallina':          'gallina',
+  'Pingüino':         'pinguino',
+  'Loro':             'loro',
+  'Búho':             'buho',
+  'Pato':             'pato',
+  'Flamenco':         'flamenco',
+  'Avestruz':         'avestruz',
+  'Canario':          'canario',
+  'Cuervo':           'cuervo',
+  'Cocodrilo':        'cocodrilo',
+  'Tortuga':          'tortuga',
+  'Serpiente':        'serpiente',
+  'Iguana':           'iguana',
+  'Camaleón':         'camaleon',
+  'Lagarto':          'lagarto',
+  'Gecko':            'gecko',
+  'Anaconda':         'anaconda',
+  'Dragón de Komodo': 'dragon_de_komodo',
+  'Boa':              'boa',
+  'Rana':             'rana',
+  'Sapo':             'sapo',
+  'Salamandra':       'salamandra',
+  'Tritón':           'triton',
+  'Axolote':          'axolote',
+  'Tiburón':          'tiburon',
+  'Salmón':           'salmon',
+  'Atún':             'atun',
+  'Pez payaso':       'pez_payaso',
+  'Pez globo':        'pez_globo',
+  'Anguila':          'anguila',
+  'Caballito de mar': 'caballito_de_mar',
+  'Piraña':           'pirana',
+  'Trucha':           'trucha',
+  'Mero':             'mero',
+  'Caballo':          'caballo',
+  'Vaca':             'vaca',
+  'Cerdo':            'cerdo',
+  'Oveja':            'oveja',
+  'Cabra':            'cabra',
+  'Canguro':          'canguro',
+  'Koala':            'koala',
+  'Dingo':            'dingo',
+  'Mono':             'mono',
+  'Chimpancé':        'chimpance',
+  'Gorila':           'gorila',
+  'Orangután':        'orangutan',
+  'Panda':            'panda',
+  'Mapache':          'mapache',
+  'Ardilla':          'ardilla',
+  'Murciélago':       'murcielago',
+  'Erizo':            'erizo',
+  'Topo':             'topo',
+  'Hiena':            'hiena',
+  'Leopardo':         'leopardo',
+  'Jaguar':           'jaguar',
+  'Alce':             'alce',
+  'Reno':             'reno',
+  'Foca':             'foca',
+  'Morsa':            'morsa',
+  'Pulpo':            'pulpo',
+  'Calamar':          'calamar',
+  'Medusa':           'medusa',
+  'Coral':            'coral',
+  'Cangrejo':         'cangrejo',
+  'Langosta':         'langosta',
+  'Abeja':            'abeja',
+  'Mariposa':         'mariposa',
+  'Hormiga':          'hormiga',
+  'Escarabajo':       'escarabajo',
+  'Mosca':            'mosca',
+  'Mosquito':         'mosquito'
+};
+
+function getImgSrc(animalName) {
+  const file = IMG_FILENAMES[animalName];
+  return file ? `images/${file}.png` : '';
+}
+
+function applyLocalImage(animalName, imgEl, emojiEl) {
+  const src = getImgSrc(animalName);
+  if (!src) return;
+  imgEl.src = src;
+  imgEl.onerror = () => { imgEl.style.display = 'none'; };
+  imgEl.onload = () => {
+    imgEl.style.display = 'block';
+    if (emojiEl) emojiEl.style.opacity = '0';
+  };
+}
+
+// ═══════════════════════════════════════════
+// ANIMAL DETAIL MODAL
+// ═══════════════════════════════════════════
+function showAnimalDetail(animal) {
+  if (!state.unlockedAnimals.has(animal.nombre)) return;
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay active';
+  overlay.style.zIndex = '2000';
+  overlay.innerHTML = `
+    <div class="modal" style="max-width:520px;padding:0;overflow:hidden;border-radius:30px">
+      <div id="detail-img-wrap" style="width:100%;height:220px;background:linear-gradient(135deg,#a8edea,#fed6e3);
+        display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">
+        <span id="detail-emoji" style="font-size:6rem;transition:opacity 0.3s">${animal.emoji}</span>
+        <img id="detail-img" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none" alt="${animal.nombre}">
+      </div>
+      <div style="padding:28px 32px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <h2 style="font-family:'Fredoka One',cursive;font-size:2rem;color:var(--dark)">${animal.nombre}</h2>
+          <span style="font-size:1.8rem">${animal.emoji}</span>
+        </div>
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--primary);margin-bottom:16px">${animal.clase}</div>
+        <p style="color:#636e72;line-height:1.6;margin-bottom:20px;font-size:1rem">${animal.descripcion}</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px">
+          <div style="background:var(--bg);border-radius:14px;padding:12px;text-align:center">
+            <div style="font-size:1.5rem">🍽️</div>
+            <div style="font-size:0.7rem;color:#636e72;font-weight:700;text-transform:uppercase">Alimentación</div>
+            <div style="font-weight:800;color:var(--dark)">${animal.alimentacion}</div>
+          </div>
+          <div style="background:var(--bg);border-radius:14px;padding:12px;text-align:center">
+            <div style="font-size:1.5rem">🌍</div>
+            <div style="font-size:0.7rem;color:#636e72;font-weight:700;text-transform:uppercase">Continente</div>
+            <div style="font-weight:800;color:var(--dark)">${animal.continente}</div>
+          </div>
+          <div style="background:var(--bg);border-radius:14px;padding:12px;text-align:center">
+            <div style="font-size:1.5rem">🥚</div>
+            <div style="font-size:0.7rem;color:#636e72;font-weight:700;text-transform:uppercase">Reproducción</div>
+            <div style="font-weight:800;color:var(--dark)">${animal.reproduccion}</div>
+          </div>
+          <div style="background:var(--bg);border-radius:14px;padding:12px;text-align:center">
+            <div style="font-size:1.5rem">🏠</div>
+            <div style="font-size:0.7rem;color:#636e72;font-weight:700;text-transform:uppercase">Hábitat</div>
+            <div style="font-weight:800;color:var(--dark)">${animal.habitat}</div>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width:100%" onclick="this.closest('.modal-overlay').remove()">✅ ¡Entendido!</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if(e.target===overlay) overlay.remove(); });
+
+  // Cargar imagen local
+  const imgEl = overlay.querySelector('#detail-img');
+  const emojiEl = overlay.querySelector('#detail-emoji');
+  applyLocalImage(animal.nombre, imgEl, emojiEl);
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+loadState();
+createBubbles();
+renderHome();
+updateHeaderStats();
+
+// Touch fix for drop zones
+document.addEventListener('touchmove', e => {
+  if (draggedAnimal) e.preventDefault();
+}, { passive: false });
+</script>
+</body>
+</html>
