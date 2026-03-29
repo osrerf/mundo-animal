@@ -51,31 +51,45 @@
   header {
     position: relative; z-index: 10;
     background: linear-gradient(135deg, var(--primary), #e84393);
-    padding: 16px 24px;
+    padding: 10px 16px;
     display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
     box-shadow: 0 4px 20px rgba(255,107,53,0.4);
+    flex-wrap: nowrap;
   }
-  .logo { font-family: 'Fredoka One', cursive; font-size: 2rem; color: white; text-shadow: 3px 3px 0 rgba(0,0,0,0.15); }
+  .logo {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.5rem;
+    color: white;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.15);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
   .logo span { color: var(--accent); }
-  .header-stats { display: flex; gap: 16px; align-items: center; }
+  .header-stats {
+    display: flex; gap: 6px; align-items: center;
+    flex-wrap: nowrap; overflow: hidden;
+  }
   .stat-badge {
     background: rgba(255,255,255,0.2); border-radius: 50px;
-    padding: 6px 16px; color: white; font-weight: 800; font-size: 0.9rem;
+    padding: 4px 10px; color: white; font-weight: 800; font-size: 0.75rem;
     backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.3);
-    display: flex; align-items: center; gap: 6px;
+    display: flex; align-items: center; gap: 4px;
+    white-space: nowrap;
   }
 
   /* ─── NAV TABS ─── */
   .nav-tabs {
     position: relative; z-index: 10;
-    display: flex; gap: 0; background: var(--dark);
-    overflow-x: auto; padding: 0 16px;
+    display: flex; background: var(--dark);
+    overflow-x: auto; padding: 0;
   }
   .nav-tab {
-    font-family: 'Fredoka One', cursive; font-size: 1rem;
-    color: rgba(255,255,255,0.6); padding: 14px 20px;
+    font-family: 'Fredoka One', cursive; font-size: 0.95rem;
+    color: rgba(255,255,255,0.6); padding: 12px 0;
     cursor: pointer; border: none; background: transparent;
     transition: all 0.3s; white-space: nowrap; position: relative;
+    flex: 1; text-align: center;
   }
   .nav-tab.active { color: var(--accent); }
   .nav-tab.active::after {
@@ -424,7 +438,7 @@
   <div class="header-stats">
     <div class="stat-badge">⭐ <span id="total-score">0</span> pts</div>
     <div class="stat-badge">🔓 <span id="unlocked-count">0</span>/40</div>
-    <div class="stat-badge">🏆 <span id="levels-done">0</span> niveles</div>
+    <div class="stat-badge">🏆 <span id="levels-done">0</span></div>
   </div>
 </header>
 
