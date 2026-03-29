@@ -85,7 +85,7 @@
   .nav-tab:hover { color: white; }
 
   /* ─── MAIN CONTENT ─── */
-  main { position: relative; z-index: 5; padding: 24px; max-width: 1400px; margin: 0 auto; }
+  main { position: relative; z-index: 5; padding: 16px 20px; max-width: 1400px; margin: 0 auto; }
 
   .screen { display: none; }
   .screen.active { display: block; animation: fadeIn 0.4s ease; }
@@ -174,8 +174,8 @@
   /* ─── GAME SCREEN ─── */
   .game-header {
     display: flex; align-items: center; justify-content: space-between;
-    background: var(--dark); border-radius: var(--radius); padding: 16px 24px;
-    margin-bottom: 20px; color: white;
+    background: var(--dark); border-radius: var(--radius); padding: 10px 20px;
+    margin-bottom: 10px; color: white;
   }
   .game-info { display: flex; gap: 24px; align-items: center; }
   .timer-display {
@@ -187,22 +187,53 @@
   .score-display { font-family: 'Fredoka One', cursive; font-size: 1.3rem; color: var(--green); }
   .progress-display { font-size: 0.9rem; color: rgba(255,255,255,0.7); }
 
-  .game-area { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
-  @media (max-width: 768px) { .game-area { grid-template-columns: 1fr; } }
+  .game-area {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 1fr;
+    gap: 16px;
+    align-items: start;
+    height: calc(100vh - 260px);
+    min-height: 380px;
+  }
+  @media (max-width: 900px) {
+    .game-area {
+      grid-template-columns: 1fr;
+      height: auto;
+    }
+  }
 
+  /* Left and right animal columns */
   .animals-pool {
     background: var(--card); border-radius: var(--radius);
-    padding: 20px; box-shadow: var(--shadow);
+    padding: 14px; box-shadow: var(--shadow);
+    overflow-y: auto;
+    max-height: 100%;
+    height: 100%;
   }
+  .animals-pool::-webkit-scrollbar { width: 5px; }
+  .animals-pool::-webkit-scrollbar-track { background: transparent; }
+  .animals-pool::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
+
+  .categories-panel {
+    display: flex; flex-direction: column; gap: 8px;
+    overflow-y: auto;
+    max-height: 100%;
+    height: 100%;
+    padding-right: 2px;
+  }
+  .categories-panel::-webkit-scrollbar { width: 5px; }
+  .categories-panel::-webkit-scrollbar-track { background: transparent; }
+  .categories-panel::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
+  .categories-panel::-webkit-scrollbar-thumb:hover { background: var(--primary); }
   .animals-pool h3 {
     font-family: 'Fredoka One', cursive; color: var(--dark);
     margin-bottom: 16px; font-size: 1.2rem;
     padding-bottom: 10px; border-bottom: 3px dashed #f0f0f0;
   }
-  .animals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; min-height: 200px; }
+  .animals-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; min-height: 100px; }
 
   .animal-card {
-    background: white; border-radius: 16px; padding: 10px 6px;
+    background: white; border-radius: 16px; padding: 10px 8px;
     text-align: center; cursor: grab; transition: all 0.2s;
     border: 3px solid #f0f0f0; user-select: none;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -223,34 +254,33 @@
     0%,100% { transform: scale(1); }
     50% { transform: scale(1.15); }
   }
-  .animal-emoji { font-size: 2.2rem; display: block; margin-bottom: 4px; }
+  .animal-emoji { font-size: 3.2rem; display: block; margin-bottom: 6px; }
   .animal-img {
-    width: 56px; height: 56px; object-fit: cover; border-radius: 10px;
-    display: block; margin: 0 auto 4px;
+    width: 80px; height: 80px; object-fit: contain; border-radius: 10px;
+    display: block; margin: 0 auto 6px; padding: 4px;
   }
-  .animal-name { font-size: 0.72rem; font-weight: 700; color: var(--dark); line-height: 1.2; }
+  .animal-name { font-size: 0.78rem; font-weight: 700; color: var(--dark); line-height: 1.2; }
 
-  .categories-panel { display: flex; flex-direction: column; gap: 12px; }
   .drop-zone {
-    background: var(--card); border-radius: var(--radius); padding: 16px;
-    border: 3px dashed #e0e0e0; transition: all 0.3s; min-height: 100px;
-    box-shadow: var(--shadow);
+    background: var(--card); border-radius: 14px; padding: 8px 12px;
+    border: 3px dashed #e0e0e0; transition: all 0.3s; min-height: 56px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
   }
   .drop-zone.drag-over { border-color: var(--primary); background: rgba(255,107,53,0.05); transform: scale(1.02); }
   .drop-zone.correct-drop { border-color: var(--green); background: rgba(85,239,196,0.1); animation: glowGreen 0.6s; }
-  @keyframes glowGreen { 0%,100% { box-shadow: var(--shadow); } 50% { box-shadow: 0 0 30px rgba(85,239,196,0.5); } }
+  @keyframes glowGreen { 0%,100% { box-shadow: 0 4px 16px rgba(0,0,0,0.08); } 50% { box-shadow: 0 0 30px rgba(85,239,196,0.5); } }
   .drop-zone-header {
-    display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
-    padding-bottom: 10px; border-bottom: 2px solid #f0f0f0;
+    display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+    padding-bottom: 6px; border-bottom: 2px solid #f0f0f0;
   }
-  .drop-zone-icon { font-size: 1.8rem; }
-  .drop-zone-label { font-family: 'Fredoka One', cursive; font-size: 1.1rem; color: var(--dark); }
-  .drop-zone-count { margin-left: auto; background: var(--primary); color: white; border-radius: 20px; padding: 2px 10px; font-size: 0.8rem; font-weight: 800; }
-  .dropped-animals { display: flex; flex-wrap: wrap; gap: 6px; min-height: 40px; }
+  .drop-zone-icon { font-size: 1.3rem; }
+  .drop-zone-label { font-family: 'Fredoka One', cursive; font-size: 0.95rem; color: var(--dark); }
+  .drop-zone-count { margin-left: auto; background: var(--primary); color: white; border-radius: 20px; padding: 1px 8px; font-size: 0.75rem; font-weight: 800; }
+  .dropped-animals { display: flex; flex-wrap: wrap; gap: 4px; min-height: 24px; }
   .dropped-animal {
-    background: var(--green); border-radius: 20px; padding: 4px 10px;
-    font-size: 0.75rem; font-weight: 700; color: var(--dark);
-    display: flex; align-items: center; gap: 4px;
+    background: var(--green); border-radius: 20px; padding: 2px 8px;
+    font-size: 0.7rem; font-weight: 700; color: var(--dark);
+    display: flex; align-items: center; gap: 3px;
     animation: popIn 0.3s ease;
   }
   @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
@@ -288,18 +318,24 @@
   .btn-secondary:hover { border-color: var(--primary); }
 
   /* ─── LEARN SCREEN ─── */
-  .learn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+  .learn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
   .learn-card {
     background: white; border-radius: var(--radius); overflow: hidden;
     box-shadow: var(--shadow); transition: all 0.3s; cursor: pointer;
+    position: relative;
   }
   .learn-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,0,0,0.15); }
   .learn-card-img {
-    width: 100%; height: 140px; background: linear-gradient(135deg, #a8edea, #fed6e3);
-    display: flex; align-items: center; justify-content: center; font-size: 4rem;
+    width: 100%; height: 200px; background: linear-gradient(135deg, #a8edea, #fed6e3);
+    display: flex; align-items: center; justify-content: center; font-size: 5rem;
     position: relative; overflow: hidden;
   }
-  .learn-card-img img { width: auto; height: auto; object-fit: contain; position: absolute; inset: 0; }
+  .learn-card-img img {
+    width: 100%; height: 100%; object-fit: contain;
+    position: absolute; inset: 0;
+    padding: 8px;
+    image-rendering: auto;
+  }
   .learn-card-body { padding: 14px; }
   .learn-card-name { font-family: 'Fredoka One', cursive; font-size: 1.1rem; color: var(--dark); margin-bottom: 4px; }
   .learn-card-class { font-size: 0.75rem; color: var(--primary); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -310,7 +346,6 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 2rem; background: rgba(0,0,0,0.3); border-radius: var(--radius);
   }
-  .learn-card { position: relative; }
 
   /* ─── FILTERS ─── */
   .filters {
@@ -371,11 +406,11 @@
   
   .game-question {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white; border-radius: var(--radius); padding: 16px 24px;
-    margin-bottom: 20px; text-align: center;
+    color: white; border-radius: var(--radius); padding: 10px 20px;
+    margin-bottom: 12px; text-align: center;
   }
-  .game-question h2 { font-family: 'Fredoka One', cursive; font-size: 1.4rem; }
-  .game-question p { opacity: 0.85; font-size: 0.95rem; margin-top: 4px; }
+  .game-question h2 { font-family: 'Fredoka One', cursive; font-size: 1.2rem; }
+  .game-question p { opacity: 0.85; font-size: 0.85rem; margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -388,7 +423,7 @@
   <div class="logo">🐾 Mundo <span>Animal</span></div>
   <div class="header-stats">
     <div class="stat-badge">⭐ <span id="total-score">0</span> pts</div>
-    <div class="stat-badge">🔓 <span id="unlocked-count">0</span>/83</div>
+    <div class="stat-badge">🔓 <span id="unlocked-count">0</span>/40</div>
     <div class="stat-badge">🏆 <span id="levels-done">0</span> niveles</div>
   </div>
 </header>
@@ -452,11 +487,15 @@
       <p id="game-question-desc">Arrastra cada animal a su categoría correcta</p>
     </div>
     <div class="game-area">
-      <div class="animals-pool">
-        <h3 id="pool-title">🐾 Animales para clasificar</h3>
-        <div class="animals-grid" id="animals-pool-grid"></div>
+      <div class="animals-pool" id="animals-pool-left">
+        <h3 id="pool-title" style="font-family:'Fredoka One',cursive;color:var(--dark);margin-bottom:12px;font-size:1rem;padding-bottom:8px;border-bottom:3px dashed #f0f0f0">🐾 Animales</h3>
+        <div class="animals-grid" id="animals-pool-grid-left"></div>
       </div>
       <div class="categories-panel" id="categories-panel"></div>
+      <div class="animals-pool" id="animals-pool-right">
+        <h3 style="font-family:'Fredoka One',cursive;color:var(--dark);margin-bottom:12px;font-size:1rem;padding-bottom:8px;border-bottom:3px dashed #f0f0f0">🐾 Animales</h3>
+        <div class="animals-grid" id="animals-pool-grid-right"></div>
+      </div>
     </div>
   </div>
 
@@ -508,89 +547,54 @@
 // ═══════════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════════
+// 40 animales conocidos por niños de 5-8 años
+// Hábitats: Selva, Océano, Granja, Sabana, Bosque, Polar
 const ANIMALS = [
-  {nombre:"León",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Sabana",reproduccion:"Vivíparo",continente:"África",emoji:"🦁",descripcion:"El león es conocido como el rey de la selva y vive en manadas."},
-  {nombre:"Elefante",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Sabana",reproduccion:"Vivíparo",continente:"África",emoji:"🐘",descripcion:"El elefante es el animal terrestre más grande del mundo."},
-  {nombre:"Tigre",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Selva",reproduccion:"Vivíparo",continente:"Asia",emoji:"🐯",descripcion:"El tigre tiene rayas únicas y es un gran cazador solitario."},
-  {nombre:"Jirafa",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Sabana",reproduccion:"Vivíparo",continente:"África",emoji:"🦒",descripcion:"La jirafa es el animal más alto del mundo con su largo cuello."},
-  {nombre:"Cebra",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Sabana",reproduccion:"Vivíparo",continente:"África",emoji:"🦓",descripcion:"La cebra tiene rayas únicas en blanco y negro para camuflarse."},
-  {nombre:"Oso",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Bosque",reproduccion:"Vivíparo",continente:"América",emoji:"🐻",descripcion:"El oso come frutas, miel y carne. ¡Le encanta la miel!"},
-  {nombre:"Lobo",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Bosque",reproduccion:"Vivíparo",continente:"Europa",emoji:"🐺",descripcion:"El lobo vive en manadas muy organizadas y aúlla a la luna."},
-  {nombre:"Zorro",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Bosque",reproduccion:"Vivíparo",continente:"Europa",emoji:"🦊",descripcion:"El zorro es muy ágil y astuto, famoso por su inteligencia."},
-  {nombre:"Perro",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Doméstico",reproduccion:"Vivíparo",continente:"Global",emoji:"🐶",descripcion:"El perro es el mejor amigo del humano desde hace miles de años."},
-  {nombre:"Gato",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Doméstico",reproduccion:"Vivíparo",continente:"Global",emoji:"🐱",descripcion:"El gato es muy curioso y ágil, puede caer siempre de pie."},
-  {nombre:"Águila",clase:"Ave",alimentacion:"Carnívoro",habitat:"Montaña",reproduccion:"Ovíparo",continente:"América",emoji:"🦅",descripcion:"El águila tiene una vista increíble y vuela muy alto."},
-  {nombre:"Gallina",clase:"Ave",alimentacion:"Omnívoro",habitat:"Granja",reproduccion:"Ovíparo",continente:"Global",emoji:"🐔",descripcion:"La gallina pone huevos y cuida mucho a sus pollitos."},
-  {nombre:"Pingüino",clase:"Ave",alimentacion:"Carnívoro",habitat:"Antártida",reproduccion:"Ovíparo",continente:"Antártida",emoji:"🐧",descripcion:"El pingüino es un ave que nada muy bien pero no puede volar."},
-  {nombre:"Loro",clase:"Ave",alimentacion:"Herbívoro",habitat:"Selva",reproduccion:"Ovíparo",continente:"América",emoji:"🦜",descripcion:"El loro puede imitar sonidos y palabras humanas."},
-  {nombre:"Búho",clase:"Ave",alimentacion:"Carnívoro",habitat:"Bosque",reproduccion:"Ovíparo",continente:"Europa",emoji:"🦉",descripcion:"El búho caza de noche y puede girar su cabeza casi 270°."},
-  {nombre:"Pato",clase:"Ave",alimentacion:"Omnívoro",habitat:"Lago",reproduccion:"Ovíparo",continente:"Global",emoji:"🦆",descripcion:"El pato puede nadar, volar y caminar. ¡Es muy versátil!"},
-  {nombre:"Flamenco",clase:"Ave",alimentacion:"Omnívoro",habitat:"Laguna",reproduccion:"Ovíparo",continente:"América",emoji:"🦩",descripcion:"El flamenco es rosado y muy elegante. Vive en grandes grupos."},
-  {nombre:"Avestruz",clase:"Ave",alimentacion:"Omnívoro",habitat:"Sabana",reproduccion:"Ovíparo",continente:"África",emoji:"🦤",descripcion:"El avestruz no puede volar pero corre más rápido que un caballo."},
-  {nombre:"Canario",clase:"Ave",alimentacion:"Herbívoro",habitat:"Bosque",reproduccion:"Ovíparo",continente:"Europa",emoji:"🐦",descripcion:"El canario tiene un canto muy bonito y melodioso."},
-  {nombre:"Cuervo",clase:"Ave",alimentacion:"Omnívoro",habitat:"Bosque",reproduccion:"Ovíparo",continente:"Global",emoji:"🐦‍⬛",descripcion:"El cuervo es una de las aves más inteligentes del mundo."},
-  {nombre:"Cocodrilo",clase:"Reptil",alimentacion:"Carnívoro",habitat:"Río",reproduccion:"Ovíparo",continente:"África",emoji:"🐊",descripcion:"El cocodrilo tiene la mordida más poderosa del reino animal."},
-  {nombre:"Tortuga",clase:"Reptil",alimentacion:"Herbívoro",habitat:"Playa",reproduccion:"Ovíparo",continente:"Global",emoji:"🐢",descripcion:"La tortuga tiene un caparazón que la protege y puede vivir 100 años."},
-  {nombre:"Serpiente",clase:"Reptil",alimentacion:"Carnívoro",habitat:"Selva",reproduccion:"Ovíparo",continente:"Global",emoji:"🐍",descripcion:"La serpiente no tiene patas y usa su lengua para oler el aire."},
-  {nombre:"Iguana",clase:"Reptil",alimentacion:"Herbívoro",habitat:"Selva",reproduccion:"Ovíparo",continente:"América",emoji:"🦎",descripcion:"La iguana es un lagarto que le encanta tomar el sol."},
-  {nombre:"Camaleón",clase:"Reptil",alimentacion:"Carnívoro",habitat:"Selva",reproduccion:"Ovíparo",continente:"África",emoji:"🦎",descripcion:"El camaleón cambia de color para comunicarse y camuflarse."},
-  {nombre:"Lagarto",clase:"Reptil",alimentacion:"Omnívoro",habitat:"Desierto",reproduccion:"Ovíparo",continente:"Global",emoji:"🦎",descripcion:"El lagarto es un reptil muy ágil que puede desprender su cola."},
-  {nombre:"Gecko",clase:"Reptil",alimentacion:"Carnívoro",habitat:"Selva",reproduccion:"Ovíparo",continente:"Asia",emoji:"🦎",descripcion:"El gecko puede trepar paredes y techos gracias a sus patas especiales."},
-  {nombre:"Anaconda",clase:"Reptil",alimentacion:"Carnívoro",habitat:"Río",reproduccion:"Vivíparo",continente:"América",emoji:"🐍",descripcion:"La anaconda es una serpiente gigante que puede medir más de 7 metros."},
-  {nombre:"Dragón de Komodo",clase:"Reptil",alimentacion:"Carnívoro",habitat:"Isla",reproduccion:"Ovíparo",continente:"Asia",emoji:"🦖",descripcion:"El dragón de Komodo es el lagarto más grande del mundo."},
-  {nombre:"Boa",clase:"Reptil",alimentacion:"Carnívoro",habitat:"Selva",reproduccion:"Vivíparo",continente:"América",emoji:"🐍",descripcion:"La boa constrictora aprieta a sus presas para atraparlas."},
-  {nombre:"Rana",clase:"Anfibio",alimentacion:"Carnívoro",habitat:"Pantano",reproduccion:"Ovíparo",continente:"Global",emoji:"🐸",descripcion:"La rana vive en el agua y en la tierra. ¡Salta muy lejos!"},
-  {nombre:"Sapo",clase:"Anfibio",alimentacion:"Carnívoro",habitat:"Bosque",reproduccion:"Ovíparo",continente:"Global",emoji:"🐸",descripcion:"El sapo tiene piel rugosa y puede ser venenoso para protegerse."},
-  {nombre:"Salamandra",clase:"Anfibio",alimentacion:"Carnívoro",habitat:"Bosque",reproduccion:"Ovíparo",continente:"Europa",emoji:"🦎",descripcion:"La salamandra tiene piel húmeda y necesita lugares mojados."},
-  {nombre:"Tritón",clase:"Anfibio",alimentacion:"Carnívoro",habitat:"Agua dulce",reproduccion:"Ovíparo",continente:"Europa",emoji:"🐊",descripcion:"El tritón es un pequeño anfibio que parece una salamandra acuática."},
-  {nombre:"Axolote",clase:"Anfibio",alimentacion:"Carnívoro",habitat:"Lago",reproduccion:"Ovíparo",continente:"América",emoji:"🦈",descripcion:"El axolote puede regenerar sus extremidades. ¡Es como tener superpoderes!"},
-  {nombre:"Tiburón",clase:"Pez",alimentacion:"Carnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Global",emoji:"🦈",descripcion:"El tiburón es el gran depredador del mar. Tiene varios filas de dientes."},
-  {nombre:"Salmón",clase:"Pez",alimentacion:"Omnívoro",habitat:"Río",reproduccion:"Ovíparo",continente:"Global",emoji:"🐟",descripcion:"El salmón nada contra la corriente para volver a donde nació."},
-  {nombre:"Atún",clase:"Pez",alimentacion:"Carnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Global",emoji:"🐟",descripcion:"El atún es uno de los peces más rápidos del océano."},
-  {nombre:"Pez payaso",clase:"Pez",alimentacion:"Omnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Oceanía",emoji:"🐠",descripcion:"El pez payaso vive entre las anémonas que lo protegen."},
-  {nombre:"Pez globo",clase:"Pez",alimentacion:"Omnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Asia",emoji:"🐡",descripcion:"El pez globo se infla como un globo para asustar a los depredadores."},
-  {nombre:"Anguila",clase:"Pez",alimentacion:"Carnívoro",habitat:"Río",reproduccion:"Ovíparo",continente:"Europa",emoji:"🐍",descripcion:"La anguila tiene el cuerpo muy alargado parecido a una serpiente."},
-  {nombre:"Caballito de mar",clase:"Pez",alimentacion:"Carnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Global",emoji:"🌊",descripcion:"En el caballito de mar, ¡es el papá quien cuida los huevos!"},
-  {nombre:"Piraña",clase:"Pez",alimentacion:"Carnívoro",habitat:"Río",reproduccion:"Ovíparo",continente:"América",emoji:"🐟",descripcion:"La piraña tiene dientes afilados como navajas y vive en ríos."},
-  {nombre:"Trucha",clase:"Pez",alimentacion:"Omnívoro",habitat:"Río",reproduccion:"Ovíparo",continente:"Europa",emoji:"🐟",descripcion:"La trucha vive en aguas frías y limpias de ríos y lagos."},
-  {nombre:"Mero",clase:"Pez",alimentacion:"Carnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Global",emoji:"🐠",descripcion:"El mero es un pez grande que puede cambiar de sexo durante su vida."},
-  {nombre:"Caballo",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Pradera",reproduccion:"Vivíparo",continente:"Global",emoji:"🐴",descripcion:"El caballo es rápido, fuerte y ha ayudado a los humanos por siglos."},
-  {nombre:"Vaca",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Granja",reproduccion:"Vivíparo",continente:"Global",emoji:"🐄",descripcion:"La vaca produce leche que tomamos todos los días."},
-  {nombre:"Cerdo",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Granja",reproduccion:"Vivíparo",continente:"Global",emoji:"🐷",descripcion:"El cerdo es un animal muy inteligente, más que los perros."},
-  {nombre:"Oveja",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Granja",reproduccion:"Vivíparo",continente:"Global",emoji:"🐑",descripcion:"La oveja nos da lana con la que hacemos ropa caliente."},
-  {nombre:"Cabra",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Montaña",reproduccion:"Vivíparo",continente:"Global",emoji:"🐐",descripcion:"La cabra puede trepar montañas muy empinadas sin caerse."},
-  {nombre:"Canguro",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Pradera",reproduccion:"Vivíparo",continente:"Oceanía",emoji:"🦘",descripcion:"La mamá canguro lleva a su bebé en una bolsa abdominal."},
-  {nombre:"Koala",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Bosque",reproduccion:"Vivíparo",continente:"Oceanía",emoji:"🐨",descripcion:"El koala duerme hasta 22 horas al día y solo come hojas de eucalipto."},
-  {nombre:"Dingo",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Desierto",reproduccion:"Vivíparo",continente:"Oceanía",emoji:"🐕",descripcion:"El dingo es un perro salvaje de Australia que vive en manadas."},
-  {nombre:"Mono",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Selva",reproduccion:"Vivíparo",continente:"América",emoji:"🐒",descripcion:"El mono es muy ágil y vive en árboles de la selva tropical."},
-  {nombre:"Chimpancé",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Selva",reproduccion:"Vivíparo",continente:"África",emoji:"🐒",descripcion:"El chimpancé es nuestro pariente más cercano y muy inteligente."},
-  {nombre:"Gorila",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Selva",reproduccion:"Vivíparo",continente:"África",emoji:"🦍",descripcion:"El gorila es el primate más grande y fuerte del mundo."},
-  {nombre:"Orangután",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Selva",reproduccion:"Vivíparo",continente:"Asia",emoji:"🦧",descripcion:"El orangután pasa la mayor parte de su vida en los árboles."},
-  {nombre:"Panda",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Bosque",reproduccion:"Vivíparo",continente:"Asia",emoji:"🐼",descripcion:"El panda gigante come bambú y es símbolo de conservación."},
-  {nombre:"Mapache",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Bosque",reproduccion:"Vivíparo",continente:"América",emoji:"🦝",descripcion:"El mapache tiene una máscara facial oscura y lavotea su comida."},
-  {nombre:"Ardilla",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Bosque",reproduccion:"Vivíparo",continente:"Global",emoji:"🐿",descripcion:"La ardilla guarda nueces para el invierno. ¡Tiene buena memoria!"},
-  {nombre:"Murciélago",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Cueva",reproduccion:"Vivíparo",continente:"Global",emoji:"🦇",descripcion:"El murciélago es el único mamífero que vuela. Usa el sonido para orientarse."},
-  {nombre:"Erizo",clase:"Mamífero",alimentacion:"Omnívoro",habitat:"Bosque",reproduccion:"Vivíparo",continente:"Europa",emoji:"🦔",descripcion:"El erizo tiene púas que lo protegen. Se hace una bolita cuando tiene miedo."},
-  {nombre:"Topo",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Subterráneo",reproduccion:"Vivíparo",continente:"Europa",emoji:"🐭",descripcion:"El topo vive bajo tierra y casi no ve porque vive en la oscuridad."},
-  {nombre:"Hiena",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Sabana",reproduccion:"Vivíparo",continente:"África",emoji:"🐕",descripcion:"La hiena tiene una risa característica y vive en grupos llamados clanes."},
-  {nombre:"Leopardo",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Selva",reproduccion:"Vivíparo",continente:"África",emoji:"🐆",descripcion:"El leopardo tiene manchas oscuras y es un cazador muy sigiloso."},
-  {nombre:"Jaguar",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Selva",reproduccion:"Vivíparo",continente:"América",emoji:"🐆",descripcion:"El jaguar es el felino más grande de América. ¡Sabe nadar muy bien!"},
-  {nombre:"Alce",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Bosque",reproduccion:"Vivíparo",continente:"Europa",emoji:"🦌",descripcion:"El alce tiene grandes cuernos llamados astas que cambia cada año."},
-  {nombre:"Reno",clase:"Mamífero",alimentacion:"Herbívoro",habitat:"Tundra",reproduccion:"Vivíparo",continente:"Europa",emoji:"🦌",descripcion:"El reno vive en el frío del norte y puede caminar en la nieve."},
-  {nombre:"Foca",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Océano",reproduccion:"Vivíparo",continente:"Antártida",emoji:"🦭",descripcion:"La foca nada muy bien y puede aguantar mucho tiempo sin respirar."},
-  {nombre:"Morsa",clase:"Mamífero",alimentacion:"Carnívoro",habitat:"Océano",reproduccion:"Vivíparo",continente:"Ártico",emoji:"🦭",descripcion:"La morsa tiene colmillos largos que usa para salir del agua y como arma."},
-  {nombre:"Pulpo",clase:"Molusco",alimentacion:"Carnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Global",emoji:"🐙",descripcion:"El pulpo tiene 8 brazos y puede cambiar de color para camuflarse."},
-  {nombre:"Calamar",clase:"Molusco",alimentacion:"Carnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Global",emoji:"🦑",descripcion:"El calamar nada muy rápido y expulsa tinta para escapar."},
-  {nombre:"Medusa",clase:"Cnidario",alimentacion:"Carnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Global",emoji:"🪼",descripcion:"La medusa puede picar con sus tentáculos. ¡No la toques en el mar!"},
-  {nombre:"Coral",clase:"Cnidario",alimentacion:"Omnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Global",emoji:"🪸",descripcion:"El coral forma arrecifes que son el hogar de miles de animales marinos."},
-  {nombre:"Cangrejo",clase:"Crustáceo",alimentacion:"Omnívoro",habitat:"Playa",reproduccion:"Ovíparo",continente:"Global",emoji:"🦀",descripcion:"El cangrejo camina de lado y tiene pinzas para defenderse."},
-  {nombre:"Langosta",clase:"Crustáceo",alimentacion:"Omnívoro",habitat:"Océano",reproduccion:"Ovíparo",continente:"Global",emoji:"🦞",descripcion:"La langosta tiene pinzas y antenas largas. Vive en el fondo del mar."},
-  {nombre:"Abeja",clase:"Insecto",alimentacion:"Herbívoro",habitat:"Colmena",reproduccion:"Ovíparo",continente:"Global",emoji:"🐝",descripcion:"La abeja produce miel y es muy importante para polinizar las flores."},
-  {nombre:"Mariposa",clase:"Insecto",alimentacion:"Herbívoro",habitat:"Jardín",reproduccion:"Ovíparo",continente:"Global",emoji:"🦋",descripcion:"La mariposa nace de una oruga y tiene alas muy coloridas."},
-  {nombre:"Hormiga",clase:"Insecto",alimentacion:"Omnívoro",habitat:"Tierra",reproduccion:"Ovíparo",continente:"Global",emoji:"🐜",descripcion:"La hormiga trabaja en equipo y puede cargar 50 veces su peso."},
-  {nombre:"Escarabajo",clase:"Insecto",alimentacion:"Omnívoro",habitat:"Bosque",reproduccion:"Ovíparo",continente:"Global",emoji:"🪲",descripcion:"El escarabajo tiene un caparazón duro que protege sus alas para volar."},
-  {nombre:"Mosca",clase:"Insecto",alimentacion:"Omnívoro",habitat:"Global",reproduccion:"Ovíparo",continente:"Global",emoji:"🪰",descripcion:"La mosca vuela muy rápido y puede detectar el peligro casi al instante."},
-  {nombre:"Mosquito",clase:"Insecto",alimentacion:"Carnívoro",habitat:"Agua",reproduccion:"Ovíparo",continente:"Global",emoji:"🦟",descripcion:"El mosquito usa su trompa para picar y tomar sangre."}
+  // MAMÍFEROS
+  {nombre:"León",       clase:"Mamífero", alimentacion:"Carnívoro", habitat:"Sabana", reproduccion:"Vivíparo", emoji:"🦁", descripcion:"El león vive en la sabana africana y vive en grupos llamados manadas."},
+  {nombre:"Elefante",   clase:"Mamífero", alimentacion:"Herbívoro", habitat:"Sabana", reproduccion:"Vivíparo", emoji:"🐘", descripcion:"El elefante es el animal terrestre más grande del mundo."},
+  {nombre:"Jirafa",     clase:"Mamífero", alimentacion:"Herbívoro", habitat:"Sabana", reproduccion:"Vivíparo", emoji:"🦒", descripcion:"La jirafa es el animal más alto del mundo gracias a su cuello largo."},
+  {nombre:"Cebra",      clase:"Mamífero", alimentacion:"Herbívoro", habitat:"Sabana", reproduccion:"Vivíparo", emoji:"🦓", descripcion:"La cebra tiene rayas en blanco y negro únicas, ¡como una huella dactilar!"},
+  {nombre:"Hipopótamo", clase:"Mamífero", alimentacion:"Herbívoro", habitat:"Sabana", reproduccion:"Vivíparo", emoji:"🦛", descripcion:"El hipopótamo pasa el día en el agua para refrescarse. ¡Come hierba de noche!"},
+  {nombre:"Tigre",      clase:"Mamífero", alimentacion:"Carnívoro", habitat:"Selva",  reproduccion:"Vivíparo", emoji:"🐯", descripcion:"El tigre tiene rayas y es el felino más grande del mundo. ¡Le encanta nadar!"},
+  {nombre:"Panda",      clase:"Mamífero", alimentacion:"Herbívoro", habitat:"Bosque", reproduccion:"Vivíparo", emoji:"🐼", descripcion:"El panda gigante come bambú todo el día y vive en los bosques de China."},
+  {nombre:"Mono",       clase:"Mamífero", alimentacion:"Omnívoro",  habitat:"Selva",  reproduccion:"Vivíparo", emoji:"🐒", descripcion:"El mono es muy ágil y vive saltando entre los árboles de la selva."},
+  {nombre:"Oso",        clase:"Mamífero", alimentacion:"Omnívoro",  habitat:"Bosque", reproduccion:"Vivíparo", emoji:"🐻", descripcion:"El oso come frutas, peces y miel. Duerme todo el invierno en su cueva."},
+  {nombre:"Lobo",       clase:"Mamífero", alimentacion:"Carnívoro", habitat:"Bosque", reproduccion:"Vivíparo", emoji:"🐺", descripcion:"El lobo vive en manadas y aúlla para comunicarse con su familia."},
+  {nombre:"Zorro",      clase:"Mamífero", alimentacion:"Omnívoro",  habitat:"Bosque", reproduccion:"Vivíparo", emoji:"🦊", descripcion:"El zorro es muy listo y rápido. Tiene una cola grande y esponjosa."},
+  {nombre:"Canguro",    clase:"Mamífero", alimentacion:"Herbívoro", habitat:"Sabana", reproduccion:"Vivíparo", emoji:"🦘", descripcion:"La mamá canguro lleva a su bebé dentro de una bolsa en su barriga."},
+  {nombre:"Koala",      clase:"Mamífero", alimentacion:"Herbívoro", habitat:"Bosque", reproduccion:"Vivíparo", emoji:"🐨", descripcion:"El koala duerme casi todo el día y solo come hojas de eucalipto."},
+  {nombre:"Perro",      clase:"Mamífero", alimentacion:"Omnívoro",  habitat:"Granja", reproduccion:"Vivíparo", emoji:"🐶", descripcion:"El perro es el mejor amigo de las personas desde hace miles de años."},
+  {nombre:"Gato",       clase:"Mamífero", alimentacion:"Carnívoro", habitat:"Granja", reproduccion:"Vivíparo", emoji:"🐱", descripcion:"El gato es muy ágil y siempre cae de pie. ¡Le gusta dormir mucho!"},
+  {nombre:"Vaca",       clase:"Mamífero", alimentacion:"Herbívoro", habitat:"Granja", reproduccion:"Vivíparo", emoji:"🐄", descripcion:"La vaca nos da la leche que tomamos todos los días. Come hierba."},
+  {nombre:"Caballo",    clase:"Mamífero", alimentacion:"Herbívoro", habitat:"Granja", reproduccion:"Vivíparo", emoji:"🐴", descripcion:"El caballo es muy rápido y fuerte. Ha ayudado a las personas por siglos."},
+  {nombre:"Cerdo",      clase:"Mamífero", alimentacion:"Omnívoro",  habitat:"Granja", reproduccion:"Vivíparo", emoji:"🐷", descripcion:"El cerdo es muy inteligente y le encanta revolcarse en el barro."},
+  {nombre:"Oveja",      clase:"Mamífero", alimentacion:"Herbívoro", habitat:"Granja", reproduccion:"Vivíparo", emoji:"🐑", descripcion:"La oveja nos da la lana con la que hacemos ropa caliente."},
+  {nombre:"Delfín",     clase:"Mamífero", alimentacion:"Carnívoro", habitat:"Océano", reproduccion:"Vivíparo", emoji:"🐬", descripcion:"El delfín es muy inteligente y juguetón. ¡Respira aire como nosotros!"},
+  {nombre:"Foca",       clase:"Mamífero", alimentacion:"Carnívoro", habitat:"Polar",  reproduccion:"Vivíparo", emoji:"🦭", descripcion:"La foca nada muy bien en el agua fría del polo. Come peces."},
+  {nombre:"Oso polar",  clase:"Mamífero", alimentacion:"Carnívoro", habitat:"Polar",  reproduccion:"Vivíparo", emoji:"🐻‍❄️", descripcion:"El oso polar tiene el pelo blanco y vive en el hielo del Ártico."},
+  // AVES
+  {nombre:"Águila",     clase:"Ave",      alimentacion:"Carnívoro", habitat:"Bosque", reproduccion:"Ovíparo",  emoji:"🦅", descripcion:"El águila tiene una vista increíble y puede ver su presa desde muy lejos."},
+  {nombre:"Gallina",    clase:"Ave",      alimentacion:"Omnívoro",  habitat:"Granja", reproduccion:"Ovíparo",  emoji:"🐔", descripcion:"La gallina pone huevos y cuida mucho a sus pollitos."},
+  {nombre:"Pingüino",   clase:"Ave",      alimentacion:"Carnívoro", habitat:"Polar",  reproduccion:"Ovíparo",  emoji:"🐧", descripcion:"El pingüino no puede volar pero nada muy bien en el agua fría."},
+  {nombre:"Loro",       clase:"Ave",      alimentacion:"Herbívoro", habitat:"Selva",  reproduccion:"Ovíparo",  emoji:"🦜", descripcion:"El loro puede imitar palabras y sonidos de las personas. ¡Muy gracioso!"},
+  {nombre:"Búho",       clase:"Ave",      alimentacion:"Carnívoro", habitat:"Bosque", reproduccion:"Ovíparo",  emoji:"🦉", descripcion:"El búho ve muy bien de noche y puede girar la cabeza casi completamente."},
+  {nombre:"Pato",       clase:"Ave",      alimentacion:"Omnívoro",  habitat:"Bosque", reproduccion:"Ovíparo",  emoji:"🦆", descripcion:"El pato puede nadar, volar y caminar. ¡Es un campeón del deporte!"},
+  {nombre:"Flamenco",   clase:"Ave",      alimentacion:"Omnívoro",  habitat:"Sabana", reproduccion:"Ovíparo",  emoji:"🦩", descripcion:"El flamenco es rosado porque come camarones. ¡Vive parado en una sola pata!"},
+  // REPTILES
+  {nombre:"Cocodrilo",  clase:"Reptil",   alimentacion:"Carnívoro", habitat:"Selva",  reproduccion:"Ovíparo",  emoji:"🐊", descripcion:"El cocodrilo tiene la mordida más poderosa de todos los animales."},
+  {nombre:"Tortuga",    clase:"Reptil",   alimentacion:"Herbívoro", habitat:"Océano", reproduccion:"Ovíparo",  emoji:"🐢", descripcion:"La tortuga lleva su casa a cuestas y puede vivir más de 100 años."},
+  {nombre:"Serpiente",  clase:"Reptil",   alimentacion:"Carnívoro", habitat:"Selva",  reproduccion:"Ovíparo",  emoji:"🐍", descripcion:"La serpiente no tiene patas y usa su lengua para oler el aire."},
+  {nombre:"Lagarto",    clase:"Reptil",   alimentacion:"Omnívoro",  habitat:"Selva",  reproduccion:"Ovíparo",  emoji:"🦎", descripcion:"El lagarto puede soltar su cola si un enemigo lo agarra. ¡Luego le vuelve a crecer!"},
+  // ANFIBIOS
+  {nombre:"Rana",       clase:"Anfibio",  alimentacion:"Carnívoro", habitat:"Bosque", reproduccion:"Ovíparo",  emoji:"🐸", descripcion:"La rana vive en el agua y en la tierra, y salta muy lejos."},
+  {nombre:"Sapo",       clase:"Anfibio",  alimentacion:"Carnívoro", habitat:"Bosque", reproduccion:"Ovíparo",  emoji:"🐸", descripcion:"El sapo usa su larga lengua pegajosa para atrapar insectos. ¡Muy rápido!"},
+  // PECES
+  {nombre:"Tiburón",    clase:"Pez",      alimentacion:"Carnívoro", habitat:"Océano", reproduccion:"Ovíparo",  emoji:"🦈", descripcion:"El tiburón es el gran cazador del mar. Tiene varias filas de dientes."},
+  {nombre:"Pez payaso", clase:"Pez",      alimentacion:"Omnívoro",  habitat:"Océano", reproduccion:"Ovíparo",  emoji:"🐠", descripcion:"El pez payaso vive protegido entre los tentáculos de la anémona."},
+  {nombre:"Pez globo",  clase:"Pez",      alimentacion:"Omnívoro",  habitat:"Océano", reproduccion:"Ovíparo",  emoji:"🐡", descripcion:"El pez globo se infla como un globo para asustar a sus enemigos."},
+  {nombre:"Pulpo",      clase:"Pez",      alimentacion:"Carnívoro", habitat:"Océano", reproduccion:"Ovíparo",  emoji:"🐙", descripcion:"El pulpo tiene 8 brazos y puede cambiar de color para esconderse."},
+  {nombre:"Cangrejo",   clase:"Pez",      alimentacion:"Omnívoro",  habitat:"Océano", reproduccion:"Ovíparo",  emoji:"🦀", descripcion:"El cangrejo camina de lado y tiene pinzas para defenderse."}
 ];
 
 const CATEGORIES = [
@@ -599,92 +603,64 @@ const CATEGORIES = [
     name: 'Alimentación',
     icon: '🍖',
     color: '#e17055',
-    desc: 'Carnívoro, Herbívoro u Omnívoro',
+    desc: '¿Qué come cada animal?',
     field: 'alimentacion',
     options: [
       {label:'Carnívoro 🥩', value:'Carnívoro', icon:'🥩'},
       {label:'Herbívoro 🌿', value:'Herbívoro', icon:'🌿'},
-      {label:'Omnívoro 🍽️', value:'Omnívoro', icon:'🍽️'}
+      {label:'Omnívoro 🍽️', value:'Omnívoro',  icon:'🍽️'}
     ],
     question: '¿Qué comen estos animales?',
-    questionDesc: 'Clasifícalos según su tipo de alimentación'
+    questionDesc: 'Carnívoro come carne · Herbívoro come plantas · Omnívoro come de todo'
   },
   {
     id: 'habitat',
     name: 'Hábitat',
     icon: '🌍',
     color: '#00b894',
-    desc: 'Selva, Océano, Bosque y más',
+    desc: '¿Dónde vive cada animal?',
     field: 'habitat',
     options: [
-      {label:'Selva 🌴', value:'Selva', icon:'🌴'},
+      {label:'Selva 🌴',  value:'Selva',  icon:'🌴'},
       {label:'Océano 🌊', value:'Océano', icon:'🌊'},
       {label:'Bosque 🌲', value:'Bosque', icon:'🌲'},
       {label:'Sabana 🦒', value:'Sabana', icon:'🦒'},
-      {label:'Río 🏞️', value:'Río', icon:'🏞️'},
-      {label:'Desierto 🏜️', value:'Desierto', icon:'🏜️'},
-      {label:'Montaña ⛰️', value:'Montaña', icon:'⛰️'},
-      {label:'Lago 🏔️', value:'Lago', icon:'🏔️'},
-      {label:'Doméstico 🏠', value:'Doméstico', icon:'🏠'},
-      {label:'Otros 🌐', value:'otros-habitat', icon:'🌐',
-       includes:['Granja','Playa','Pantano','Antártida','Cueva','Pradera','Tundra','Subterráneo','Agua dulce','Laguna','Colmena','Jardín','Tierra','Agua','Global','Isla','Agua','Colmena']}
+      {label:'Granja 🐄', value:'Granja', icon:'🐄'},
+      {label:'Polar ❄️',  value:'Polar',  icon:'❄️'}
     ],
     question: '¿Dónde viven estos animales?',
-    questionDesc: 'Arrastra cada animal a su hábitat natural'
+    questionDesc: 'Arrastra cada animal al lugar donde vive'
   },
   {
     id: 'reproduccion',
     name: 'Reproducción',
     icon: '🥚',
     color: '#fdcb6e',
-    desc: 'Ovíparo o Vivíparo',
+    desc: '¿Nacen de huevo o de mamá?',
     field: 'reproduccion',
     options: [
-      {label:'Ovíparo 🥚', value:'Ovíparo', icon:'🥚'},
-      {label:'Vivíparo 🤱', value:'Vivíparo', icon:'🤱'}
+      {label:'Nace de huevo 🥚', value:'Ovíparo',  icon:'🥚'},
+      {label:'Nace de mamá 🤱',  value:'Vivíparo', icon:'🤱'}
     ],
     question: '¿Cómo nacen estos animales?',
-    questionDesc: 'Los ovíparos nacen de huevos, los vivíparos nacen de su mamá'
+    questionDesc: 'Algunos nacen de huevos y otros salen de la barriga de su mamá'
   },
   {
     id: 'clase',
-    name: 'Clase Animal',
+    name: 'Tipo de Animal',
     icon: '🔬',
     color: '#a29bfe',
-    desc: 'Mamífero, Ave, Reptil, Anfibio y más',
+    desc: '¿A qué grupo pertenece?',
     field: 'clase',
     options: [
       {label:'Mamífero 🐾', value:'Mamífero', icon:'🐾'},
-      {label:'Ave 🦅', value:'Ave', icon:'🦅'},
-      {label:'Reptil 🦎', value:'Reptil', icon:'🦎'},
-      {label:'Anfibio 🐸', value:'Anfibio', icon:'🐸'},
-      {label:'Pez 🐟', value:'Pez', icon:'🐟'},
-      {label:'Insecto 🐜', value:'Insecto', icon:'🐜'},
-      {label:'Otros 🐙', value:'otros-clase', icon:'🐙',
-       includes:['Molusco','Cnidario','Crustáceo']}
+      {label:'Ave 🦅',      value:'Ave',      icon:'🦅'},
+      {label:'Reptil 🦎',   value:'Reptil',   icon:'🦎'},
+      {label:'Anfibio 🐸',  value:'Anfibio',  icon:'🐸'},
+      {label:'Pez 🐟',      value:'Pez',      icon:'🐟'}
     ],
     question: '¿A qué grupo pertenecen?',
-    questionDesc: 'Cada animal tiene una clasificación científica'
-  },
-  {
-    id: 'continente',
-    name: 'Continente',
-    icon: '🌎',
-    color: '#74b9ff',
-    desc: 'África, Asia, América y más',
-    field: 'continente',
-    options: [
-      {label:'África 🌍', value:'África', icon:'🌍'},
-      {label:'Asia 🌏', value:'Asia', icon:'🌏'},
-      {label:'América 🌎', value:'América', icon:'🌎'},
-      {label:'Europa 🏰', value:'Europa', icon:'🏰'},
-      {label:'Oceanía 🦘', value:'Oceanía', icon:'🦘'},
-      {label:'Global 🌐', value:'Global', icon:'🌐'},
-      {label:'Otros ❄️', value:'otros-continente', icon:'❄️',
-       includes:['Antártida','Ártico']}
-    ],
-    question: '¿En qué continente viven?',
-    questionDesc: 'Ubica a cada animal en su continente de origen'
+    questionDesc: 'Mamífero · Ave · Reptil · Anfibio · Pez'
   }
 ];
 
@@ -969,26 +945,36 @@ function renderGame() {
     updateTimer();
   }
   
-  // Render animals pool
-  const pool = document.getElementById('animals-pool-grid');
-  pool.innerHTML = gameState.animals.map(a => `
-    <div class="animal-card" id="card-${sanitize(a.nombre)}"
-      draggable="true"
-      ondragstart="dragStart(event,'${a.nombre}')"
-      ondragend="dragEnd(event)"
-      ontouchstart="touchStart(event,'${a.nombre}')"
-      ontouchmove="touchMove(event)"
-      ontouchend="touchEnd(event,'${a.nombre}')">
-      <span class="pool-emoji-${sanitize(a.nombre)}" style="font-size:2.2rem;display:block;margin-bottom:4px;transition:opacity 0.3s">${a.emoji}</span>
-      <img class="pool-img-${sanitize(a.nombre)}" style="display:none;width:56px;height:56px;object-fit:cover;border-radius:10px;margin:0 auto 4px" alt="${a.nombre}">
-      <div class="animal-name">${a.nombre}</div>
-    </div>
-  `).join('');
+  // Render animals pool — split into left and right halves
+  const half = Math.ceil(gameState.animals.length / 2);
+  const leftAnimals = gameState.animals.slice(0, half);
+  const rightAnimals = gameState.animals.slice(half);
 
-  // Cargar imágenes locales en las tarjetas del juego
+  function animalCardHTML(a) {
+    return `
+      <div class="animal-card" id="card-${sanitize(a.nombre)}"
+        draggable="true"
+        ondragstart="dragStart(event,'${a.nombre}')"
+        ondragend="dragEnd(event)"
+        ontouchstart="touchStart(event,'${a.nombre}')"
+        ontouchmove="touchMove(event)"
+        ontouchend="touchEnd(event,'${a.nombre}')">
+        <span class="pool-emoji-${sanitize(a.nombre)}" style="font-size:3.2rem;display:block;margin-bottom:6px;transition:opacity 0.3s">${a.emoji}</span>
+        <img class="pool-img-${sanitize(a.nombre)}" style="display:none;width:80px;height:80px;object-fit:contain;border-radius:10px;margin:0 auto 6px;padding:4px" alt="${a.nombre}">
+        <div class="animal-name">${a.nombre}</div>
+      </div>
+    `;
+  }
+
+  const poolLeft = document.getElementById('animals-pool-grid-left');
+  const poolRight = document.getElementById('animals-pool-grid-right');
+  poolLeft.innerHTML = leftAnimals.map(animalCardHTML).join('');
+  poolRight.innerHTML = rightAnimals.map(animalCardHTML).join('');
+
+  // Load local images for all animals
   gameState.animals.forEach((a) => {
-    const imgEl = pool.querySelector(`.pool-img-${sanitize(a.nombre)}`);
-    const emojiEl = pool.querySelector(`.pool-emoji-${sanitize(a.nombre)}`);
+    const imgEl = document.querySelector(`.pool-img-${sanitize(a.nombre)}`);
+    const emojiEl = document.querySelector(`.pool-emoji-${sanitize(a.nombre)}`);
     if (imgEl) applyLocalImage(a.nombre, imgEl, emojiEl);
   });
   
@@ -1246,9 +1232,9 @@ function renderLearn() {
     return `
       <div class="learn-card ${isUnlocked?'':'locked'}" ${clickHandler} data-animal="${a.nombre}">
         <div class="learn-card-img">
-          <span class="card-emoji-${sanitize(a.nombre)}" style="font-size:4rem;transition:opacity 0.4s">${a.emoji}</span>
+          <span class="card-emoji-${sanitize(a.nombre)}" style="font-size:5rem;transition:opacity 0.4s;position:absolute">${a.emoji}</span>
           <img class="card-img-${sanitize(a.nombre)}"
-               style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none"
+               style="width:100%;height:100%;object-fit:contain;padding:8px;display:none;position:absolute;inset:0"
                alt="${a.nombre}">
         </div>
         <div class="learn-card-body">
@@ -1258,7 +1244,7 @@ function renderLearn() {
             ? `<div class="learn-card-desc">${a.descripcion}</div>
                <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px">
                  <span style="background:#f0f0f0;border-radius:10px;padding:2px 8px;font-size:0.7rem">🍽️ ${a.alimentacion}</span>
-                 <span style="background:#f0f0f0;border-radius:10px;padding:2px 8px;font-size:0.7rem">🌍 ${a.continente}</span>
+                 <span style="background:#f0f0f0;border-radius:10px;padding:2px 8px;font-size:0.7rem">🏠 ${a.habitat}</span>
                  <span style="background:#f0f0f0;border-radius:10px;padding:2px 8px;font-size:0.7rem">🥚 ${a.reproduccion}</span>
                </div>
                <div style="margin-top:10px;font-size:0.75rem;color:var(--secondary);font-weight:700">👆 Toca para saber más</div>`
@@ -1376,88 +1362,46 @@ function playSound(type) {
 // ═══════════════════════════════════════════
 
 const IMG_FILENAMES = {
-  'León':             'leon',
-  'Elefante':         'elefante',
-  'Tigre':            'tigre',
-  'Jirafa':           'jirafa',
-  'Cebra':            'cebra',
-  'Oso':              'oso',
-  'Lobo':             'lobo',
-  'Zorro':            'zorro',
-  'Perro':            'perro',
-  'Gato':             'gato',
-  'Águila':           'aguila',
-  'Gallina':          'gallina',
-  'Pingüino':         'pinguino',
-  'Loro':             'loro',
-  'Búho':             'buho',
-  'Pato':             'pato',
-  'Flamenco':         'flamenco',
-  'Avestruz':         'avestruz',
-  'Canario':          'canario',
-  'Cuervo':           'cuervo',
-  'Cocodrilo':        'cocodrilo',
-  'Tortuga':          'tortuga',
-  'Serpiente':        'serpiente',
-  'Iguana':           'iguana',
-  'Camaleón':         'camaleon',
-  'Lagarto':          'lagarto',
-  'Gecko':            'gecko',
-  'Anaconda':         'anaconda',
-  'Dragón de Komodo': 'dragon_de_komodo',
-  'Boa':              'boa',
-  'Rana':             'rana',
-  'Sapo':             'sapo',
-  'Salamandra':       'salamandra',
-  'Tritón':           'triton',
-  'Axolote':          'axolote',
-  'Tiburón':          'tiburon',
-  'Salmón':           'salmon',
-  'Atún':             'atun',
-  'Pez payaso':       'pez_payaso',
-  'Pez globo':        'pez_globo',
-  'Anguila':          'anguila',
-  'Caballito de mar': 'caballito_de_mar',
-  'Piraña':           'pirana',
-  'Trucha':           'trucha',
-  'Mero':             'mero',
-  'Caballo':          'caballo',
-  'Vaca':             'vaca',
-  'Cerdo':            'cerdo',
-  'Oveja':            'oveja',
-  'Cabra':            'cabra',
-  'Canguro':          'canguro',
-  'Koala':            'koala',
-  'Dingo':            'dingo',
-  'Mono':             'mono',
-  'Chimpancé':        'chimpance',
-  'Gorila':           'gorila',
-  'Orangután':        'orangutan',
-  'Panda':            'panda',
-  'Mapache':          'mapache',
-  'Ardilla':          'ardilla',
-  'Murciélago':       'murcielago',
-  'Erizo':            'erizo',
-  'Topo':             'topo',
-  'Hiena':            'hiena',
-  'Leopardo':         'leopardo',
-  'Jaguar':           'jaguar',
-  'Alce':             'alce',
-  'Reno':             'reno',
-  'Foca':             'foca',
-  'Morsa':            'morsa',
-  'Pulpo':            'pulpo',
-  'Calamar':          'calamar',
-  'Medusa':           'medusa',
-  'Coral':            'coral',
-  'Cangrejo':         'cangrejo',
-  'Langosta':         'langosta',
-  'Abeja':            'abeja',
-  'Mariposa':         'mariposa',
-  'Hormiga':          'hormiga',
-  'Escarabajo':       'escarabajo',
-  'Mosca':            'mosca',
-  'Mosquito':         'mosquito'
+  'León':        'leon',
+  'Elefante':    'elefante',
+  'Jirafa':      'jirafa',
+  'Cebra':       'cebra',
+  'Hipopótamo':  'hipopotamo',
+  'Tigre':       'tigre',
+  'Panda':       'panda',
+  'Mono':        'mono',
+  'Oso':         'oso',
+  'Lobo':        'lobo',
+  'Zorro':       'zorro',
+  'Canguro':     'canguro',
+  'Koala':       'koala',
+  'Perro':       'perro',
+  'Gato':        'gato',
+  'Vaca':        'vaca',
+  'Caballo':     'caballo',
+  'Cerdo':       'cerdo',
+  'Oveja':       'oveja',
+  'Foca':        'foca',
+  'Oso polar':   'oso_polar',
+  'Águila':      'aguila',
+  'Gallina':     'gallina',
+  'Pingüino':    'pinguino',
+  'Loro':        'loro',
+  'Búho':        'buho',
+  'Pato':        'pato',
+  'Flamenco':    'flamenco',
+  'Cocodrilo':   'cocodrilo',
+  'Tortuga':     'tortuga',
+  'Serpiente':   'serpiente',
+  'Lagarto':     'lagarto',
+  'Rana':        'rana',
+  'Sapo':        'sapo',
+  'Tiburón':     'tiburon',
+  'Pez payaso':  'pez_payaso',
+  'Pez globo':   'pez_globo',
+  'Delfín':      'delfin',
+  'Pulpo':       'pulpo',
+  'Cangrejo':    'cangrejo'
 };
 
 function getImgSrc(animalName) {
@@ -1472,7 +1416,10 @@ function applyLocalImage(animalName, imgEl, emojiEl) {
   imgEl.onerror = () => { imgEl.style.display = 'none'; };
   imgEl.onload = () => {
     imgEl.style.display = 'block';
-    if (emojiEl) emojiEl.style.opacity = '0';
+    if (emojiEl) {
+      emojiEl.style.opacity = '0';
+      emojiEl.style.transition = 'opacity 0.3s';
+    }
   };
 }
 
@@ -1506,9 +1453,9 @@ function showAnimalDetail(animal) {
             <div style="font-weight:800;color:var(--dark)">${animal.alimentacion}</div>
           </div>
           <div style="background:var(--bg);border-radius:14px;padding:12px;text-align:center">
-            <div style="font-size:1.5rem">🌍</div>
-            <div style="font-size:0.7rem;color:#636e72;font-weight:700;text-transform:uppercase">Continente</div>
-            <div style="font-weight:800;color:var(--dark)">${animal.continente}</div>
+            <div style="font-size:1.5rem">🔬</div>
+            <div style="font-size:0.7rem;color:#636e72;font-weight:700;text-transform:uppercase">Tipo</div>
+            <div style="font-weight:800;color:var(--dark)">${animal.clase}</div>
           </div>
           <div style="background:var(--bg);border-radius:14px;padding:12px;text-align:center">
             <div style="font-size:1.5rem">🥚</div>
